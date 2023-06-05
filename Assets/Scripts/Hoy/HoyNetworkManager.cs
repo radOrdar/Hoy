@@ -15,7 +15,6 @@ namespace Hoy
         // Overrides the base singleton so we don't
         // have to cast to this type everywhere.
         public static new HoyNetworkManager singleton { get; private set; }
-        private GameManager _gameManager;
 
         public List<HoyPlayer> players = new List<HoyPlayer>();
 
@@ -148,15 +147,14 @@ namespace Hoy
         [Server]
         private void StartGame()
         {
-            _gameManager = FindObjectOfType<GameManager>();
-            _gameManager.Init();
+            GameManager.singleton.Init();
             foreach (HoyPlayer hoyPlayer in players)
             {
                 hoyPlayer.RPCGameStarted();
             }
 
-            _gameManager.hoyPlayers = players;
-            _gameManager.DealTheCards();
+            GameManager.singleton.hoyPlayers = players;
+            GameManager.singleton.DealTheCards();
         }
 
         /// <summary>

@@ -50,7 +50,7 @@ namespace Hoy
         [Command]
         public void CmdOnEndDrag()
         {
-            FindObjectOfType<GameManager>().DragEnded(this);
+            GameManager.singleton.DragEnded(this);
         }
     }
 }
