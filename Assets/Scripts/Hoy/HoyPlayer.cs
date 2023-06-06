@@ -94,7 +94,9 @@ namespace Hoy
 		[ClientRpc]
 		public void RPCGameStarted()
 		{
-			FindObjectOfType<UI>().DeactivateWaitPanel();
+			var ui = FindObjectOfType<UI>();
+			ui.DeactivateWaitPanel();
+			ui.ActivateInGameUI();
 		}
 	}
 }
