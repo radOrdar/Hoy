@@ -36,7 +36,7 @@ namespace Hoy
         [ClientCallback]
         private void OnMouseDown()
         {
-            yourTurn = GameManager.singleton.CurrentGameState == GameState.PlayerTurn && GameManager.singleton.PlayerWhosTurn.PlayerName == NetworkClient.localPlayer.GetComponent<HoyPlayer>().PlayerName;
+            yourTurn = GameManager.singleton.CurrentGameState == GameState.PlayerTurn && GameManager.singleton.WhosNextMove.PlayerName == NetworkClient.localPlayer.GetComponent<HoyPlayer>().PlayerName;
         }
     }
 }

@@ -8,6 +8,7 @@ namespace Hoy
       [SerializeField] private GameObject waitPlayerPanel;
       [SerializeField] private TextMeshProUGUI bottomPlayerNameText;
       [SerializeField] private TextMeshProUGUI topPlayerNameText;
+      [SerializeField] private TextMeshProUGUI whosMoveNameText;
 
       private void Awake()
       {
@@ -28,6 +29,11 @@ namespace Hoy
       public void SetFoePlayerName(string newName)
       {
          topPlayerNameText.SetText(newName);
+      }
+
+      public void SetMoveNextName(string name)
+      {
+         whosMoveNameText.SetText($"{name} next move");
       }
    }
 }

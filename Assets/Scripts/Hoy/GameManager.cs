@@ -23,8 +23,8 @@ namespace Hoy
         [field:SyncVar] 
         public GameState CurrentGameState { get; set; }
         
-        [field:SyncVar(hook = nameof(OnPlayerTurnChanged))]
-        public HoyPlayer PlayerWhosTurn { get; set; }
+        [field:SyncVar(hook = nameof(OnWhosNextMoveChanged))]
+        public HoyPlayer WhosNextMove { get; set; }
         private Bounds _dealZoneBounds;
 
         private void Awake()
@@ -123,7 +123,7 @@ namespace Hoy
             switch (state)
             {
                 case GameState.PlayerTurn:
-                    PlayerWhosTurn = hoyPlayers.First(_ => _ != PlayerWhosTurn);
+                    WhosNextMove = hoyPlayers.First(_ => _ != WhosNextMove);
                     CurrentGameState = GameState.PlayerTurn;
                     break;
                 case GameState.DealingCards:
@@ -142,10 +142,11 @@ namespace Hoy
             }
         }
 
-        private void OnPlayerTurnChanged(HoyPlayer oldValue, HoyPlayer newValue)
+        private void OnWhosNextMoveChanged(HoyPlayer oldValue, HoyPlayer newValue)
         {
             if (newValue != null)
             {
+                FindObjectOfType<UI>().SetMoveNextName(newValue.PlayerName);
                 Debug.Log($"{newValue.PlayerName} turn");
             } else
             {
