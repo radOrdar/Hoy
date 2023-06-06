@@ -13,7 +13,7 @@ namespace Hoy
 	public class HoyPlayer : NetworkBehaviour
 	{
 
-		[field:SyncVar]
+		[field:SyncVar(hook = nameof(OnPlayerNameSet))]
 		public string PlayerName { get; set; }
 	
 		#region Start & Stop Callbacks
@@ -54,9 +54,20 @@ namespace Hoy
 		/// </summary>
 		public override void OnStartLocalPlayer()
 		{
-			
 			GameObject.FindWithTag("MainCamera").transform.parent.rotation = Quaternion.LookRotation(-transform.position, -Vector3.forward);
 			Debug.Log("Camera is oriented");
+		}
+
+		private void OnPlayerNameSet(string oldName, string newName)
+		{
+			if (isLocalPlayer)
+			{
+				FindObjectOfType<UI>().SetLocalPlayerName(newName);
+			} else
+			{
+				FindObjectOfType<UI>().SetFoePlayerName(newName);
+			}
+
 		}
 
 		/// <summary>
@@ -83,8 +94,7 @@ namespace Hoy
 		[ClientRpc]
 		public void RPCGameStarted()
 		{
-			FindObjectOfType<WaitingCanvasActivator>().Deactivate();
+			FindObjectOfType<UI>().DeactivateWaitPanel();
 		}
-    
 	}
 }
