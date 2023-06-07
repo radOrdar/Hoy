@@ -26,7 +26,7 @@ Transform:
   m_GameObject: {fileID: 3550220246291572087}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 4.01, y: 5.83, z: 1}
+  m_LocalScale: {x: 4.08, y: 5.92, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 3550220247728534289}
@@ -114,7 +114,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3550220247728534303}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.77, y: -23.93, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -164,9 +164,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 0d5b49ff0b47eaf4591e3037fd0f78e3, type: 2}
   - {fileID: 11400000, guid: 1ae77c3ff54f37d44ba39d7f617f996c, type: 2}
   faceSpriteRenderer: {fileID: 3550220248154290065}
+  _sortingGroup: {fileID: 3550220247728534302}
   cardDealMoveTime: 0.3
   _dragControl: {fileID: -344307783405307271}
-  target: {x: 0, y: 0, z: 0}
 --- !u!114 &-344307783405307271
 MonoBehaviour:
   m_ObjectHideFlags: 0

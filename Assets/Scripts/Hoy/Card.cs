@@ -3,6 +3,7 @@ using DG.Tweening;
 using Hoy.StaticData;
 using Mirror;
 using UnityEngine;
+using UnityEngine.Rendering;
 
 namespace Hoy
 {
@@ -10,6 +11,7 @@ namespace Hoy
     {
         [SerializeField] private CardStaticData[] _staticDatas;
         [SerializeField] private SpriteRenderer faceSpriteRenderer;
+        [SerializeField] private SortingGroup _sortingGroup;
         [SerializeField] public float cardDealMoveTime = 0.5f;
         [SerializeField] private DragControl _dragControl;
 
@@ -17,12 +19,15 @@ namespace Hoy
         private Vector3 _target;
 
         private CardStaticData _staticData;
+        public int Value => _staticData.value;
 
         public override void OnStartAuthority()
         {
-            Debug.Log("card authority");
             base.OnStartAuthority();
-            faceSpriteRenderer.sprite = _staticData.faceSprite;
+            if (isClient)
+            {
+                faceSpriteRenderer.sprite = _staticData.faceSprite;
+            }
         }
 
         [Server]
@@ -32,14 +37,21 @@ namespace Hoy
             RPCInitialize(cardStaticData.faceType);
         }
 
-        [ClientRpc]
-        private void RPCInitialize(CardFaceType faceType)
+        [Command]
+        public void CmdOnEndDrag()
         {
-            _staticData = _staticDatas.First(sd => sd.faceType == faceType);
+            GameManager.singleton.DragEnded(this);
+        }
+
+        [Server]
+        public void SetTargetServer(Vector3 newTarget)
+        {
+            _target = newTarget;
+            DOTween.Sequence().Append(transform.DOMove(newTarget, cardDealMoveTime));
         }
 
         [TargetRpc]
-        public void SetTarget(NetworkConnectionToClient conn, Vector3 newTarget)
+        public void RpcSetTargetOnLocalPlayer(NetworkConnectionToClient conn, Vector3 newTarget)
         {
             _target = newTarget;
             _dragControl.enabled = false;
@@ -47,10 +59,23 @@ namespace Hoy
                 .AppendCallback(() => _dragControl.enabled = true);
         }
 
-        [Command]
-        public void CmdOnEndDrag()
+        [ClientRpc]
+        private void RPCInitialize(CardFaceType faceType)
         {
-            GameManager.singleton.DragEnded(this);
+            _staticData = _staticDatas.First(sd => sd.faceType == faceType);
         }
+
+
+        [ClientRpc]
+        public void RpcSetOrderInLayer(int nextOrderInLayer)
+        {
+            _sortingGroup.sortingOrder = nextOrderInLayer;
+        }
+
+        [ClientRpc]
+        public void RpcShowCardToAllClients()
+        {
+            faceSpriteRenderer.sprite = _staticData.faceSprite;
+        } 
     }
 }

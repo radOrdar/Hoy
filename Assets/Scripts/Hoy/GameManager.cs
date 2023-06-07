@@ -26,6 +26,7 @@ namespace Hoy
         [field:SyncVar(hook = nameof(OnWhosNextMoveChanged))]
         public HoyPlayer WhosNextMove { get; set; }
         private Bounds _dealZoneBounds;
+        private PlayedCardSlotPack _playedCardSlotPack;
 
         private void Awake()
         {
@@ -35,7 +36,7 @@ namespace Hoy
         [Server]
         public void Init()
         {
-            
+            _playedCardSlotPack = new PlayedCardSlotPack(new Vector2(-7.9f, 1f), 0, 4.3f, -3.2f);
             ChangeGameState(GameState.DealingCards);
             _dealZoneBounds = new Bounds(dealZone.position, dealZone.localScale);
             InitCardDeck();
@@ -59,7 +60,6 @@ namespace Hoy
         private void SpawnCards()
         {
             float currY = 0;
-            float currZ = 0;
 
             for (int i = 0; i < cardStaticDatas.Select(c => c.numberInDeck).Sum(); i++)
             {
@@ -67,9 +67,8 @@ namespace Hoy
                 NetworkServer.Spawn(card.gameObject);
                 _cardsSpawned.Add(card);
 
-                card.transform.position = cardDeckSpawnTrans.position + new Vector3(0, currY, currZ);
+                card.transform.position = cardDeckSpawnTrans.position + new Vector3(0, currY);
                 currY -= 0.05f;
-                currZ -= .01f;
             }
         }
 
@@ -109,7 +108,7 @@ namespace Hoy
 
                 for (int i = startIndexCard; i > startIndexCard - amount; i--)
                 {
-                    _cardsSpawned[i].SetTarget(connToClient, playerPos + Vector3.right * horizDisplacement);
+                    _cardsSpawned[i].RpcSetTargetOnLocalPlayer(connToClient, playerPos + Vector3.right * horizDisplacement);
                     horizDisplacement += 1.25f;
                     yield return new WaitForSeconds(_cardsSpawned[i].cardDealMoveTime);
                 }
@@ -118,6 +117,7 @@ namespace Hoy
             ChangeGameState(GameState.PlayerTurn);
         }
 
+        [Server]
         private void ChangeGameState(GameState state)
         {
             switch (state)
@@ -137,9 +137,36 @@ namespace Hoy
         {
             if (!_dealZoneBounds.Contains(card.transform.position))
             {
-                var connToClient = card.connectionToClient;
-                card.SetTarget(connToClient, connToClient.owned.First(_ => _.GetComponent<HoyPlayer>() != null).transform.position);
+                SetTargetOnLocalPlayer(card);
+            } else
+            {
+                if (_playedCardSlotPack.Count % 2 == 0)
+                {
+                    PlayCard(card);
+                    ChangeGameState(GameState.PlayerTurn);
+                }else if (card.Value >= _playedCardSlotPack.LastCard.Value)
+                {
+                    PlayCard(card);
+                    ChangeGameState(GameState.PlayerTurn);
+                } else
+                {
+                    SetTargetOnLocalPlayer(card);
+                }
             }
+        }
+
+        [Server]
+        private void PlayCard(Card card)
+        {
+            card.netIdentity.RemoveClientAuthority();
+            card.RpcShowCardToAllClients();
+            _playedCardSlotPack.AddCard(card);
+        }
+
+        private void SetTargetOnLocalPlayer(Card card)
+        {
+            var connToClient = card.connectionToClient;
+            card.RpcSetTargetOnLocalPlayer(connToClient, connToClient.owned.First(_ => _.GetComponent<HoyPlayer>() != null).transform.position);
         }
 
         private void OnWhosNextMoveChanged(HoyPlayer oldValue, HoyPlayer newValue)
