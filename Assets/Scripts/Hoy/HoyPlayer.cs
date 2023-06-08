@@ -12,9 +12,12 @@ namespace Hoy
 {
 	public class HoyPlayer : NetworkBehaviour
 	{
-
+		[SerializeField] private Vector2 _localOffsetCardPack;
+		[SerializeField] private float _horizontalOffset;
 		[field:SyncVar(hook = nameof(OnPlayerNameSet))]
 		public string PlayerName { get; set; }
+
+		private PlayerCardSlotPack _playerCardSlotPack;
 	
 		#region Start & Stop Callbacks
 
@@ -25,7 +28,9 @@ namespace Hoy
 		/// </summary>
 		public override void OnStartServer()
 		{
+			transform.up = -transform.position;
 			
+			_playerCardSlotPack = new PlayerCardSlotPack(transform.TransformPoint(_localOffsetCardPack), transform.right * _horizontalOffset, 10, connectionToClient);
 		}
 
 		/// <summary>
@@ -97,6 +102,18 @@ namespace Hoy
 			var ui = FindObjectOfType<UI>();
 			ui.DeactivateWaitPanel();
 			ui.ActivateInGameUI();
+		}
+
+		[Server]
+		public void TakeCard(Card card)
+		{
+			_playerCardSlotPack.AddCard(card);
+		}
+
+		[Command]
+		public void CmdOnStartDrag(Card card)
+		{
+			_playerCardSlotPack.DeleteCard(card);
 		}
 	}
 }

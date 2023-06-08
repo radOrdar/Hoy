@@ -57,14 +57,14 @@ namespace Hoy
             }
         }
 
-        /*[TargetRpc]
+        [TargetRpc]
         public void RpcSetTargetOnLocalPlayer(NetworkConnectionToClient conn, Vector3 newTarget)
         {
             _target = newTarget;
             _dragControl.enabled = false;
             DOTween.Sequence().Append(transform.DOMove(newTarget, cardDealMoveTime))
                 .AppendCallback(() => _dragControl.enabled = true);
-        }*/
+        }
         
         [Server]
         public void SetSyncDirection(SyncDirection newSyncDirection)
@@ -83,6 +83,8 @@ namespace Hoy
         private void RPCInitialize(CardFaceType faceType)
         {
             _staticData = _staticDatas.First(sd => sd.faceType == faceType);
+            _dragControl.OnStartDrag = DragStarted;
+            _dragControl.OnEndDrag = CmdOnEndDrag;
         }
 
 
@@ -96,6 +98,12 @@ namespace Hoy
         public void RpcShowCardToAllClients()
         {
             faceSpriteRenderer.sprite = _staticData.faceSprite;
-        } 
+        }
+
+        [Client]
+        public void DragStarted()
+        {
+            NetworkClient.localPlayer.GetComponent<HoyPlayer>().CmdOnStartDrag(this);
+        }
     }
 }

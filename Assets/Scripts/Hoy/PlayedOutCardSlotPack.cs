@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Hoy
 {
-    public class PlayedCardSlotPack
+    public class PlayedOutCardSlotPack
     {
         private Vector2 startPoint;
         private int _orderInLayer;
@@ -15,7 +15,7 @@ namespace Hoy
         private float _nextHorizontalOffset;
         private float _nextVerticalOffset;
 
-        public PlayedCardSlotPack(Vector2 startPoint, int orderInLayer, float horizontalOffset, float verticalOffset)
+        public PlayedOutCardSlotPack(Vector2 startPoint, int orderInLayer, float horizontalOffset, float verticalOffset)
         {
             this.startPoint = startPoint;
             _orderInLayer = orderInLayer;
