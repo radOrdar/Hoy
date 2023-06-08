@@ -98,19 +98,19 @@ namespace Hoy
                 Vector3 playerPos = hoyPlayers[playerIndex].transform.position;
                 var connToClient = hoyPlayers[playerIndex].connectionToClient;
                 float horizDisplacement = -5;
-
+                
                 for (int i = startIndexCard; i > startIndexCard - amount; i--)
                 {
-                    _cardsSpawned[i].netIdentity.AssignClientAuthority(connToClient);
+                    _cardsSpawned[i].SetTargetServer(playerPos + Vector3.right * horizDisplacement);
+                    // _cardsSpawned[i].RpcSetTargetOnLocalPlayer(connToClient, playerPos + Vector3.right * horizDisplacement);
+                    horizDisplacement += 1.25f;
+                    yield return new WaitForSeconds(_cardsSpawned[i].cardDealMoveTime);
                 }
-
                 yield return new WaitForSeconds(0.1f);
 
                 for (int i = startIndexCard; i > startIndexCard - amount; i--)
                 {
-                    _cardsSpawned[i].RpcSetTargetOnLocalPlayer(connToClient, playerPos + Vector3.right * horizDisplacement);
-                    horizDisplacement += 1.25f;
-                    yield return new WaitForSeconds(_cardsSpawned[i].cardDealMoveTime);
+                    _cardsSpawned[i].netIdentity.AssignClientAuthority(connToClient);
                 }
             }
 
@@ -135,9 +135,16 @@ namespace Hoy
         [Server]
         public void DragEnded(Card card)
         {
+            var connToClient = card.connectionToClient;
             if (!_dealZoneBounds.Contains(card.transform.position))
             {
-                SetTargetOnLocalPlayer(card);
+                card.SetTargetServer(connToClient.owned.First(_ => _.GetComponent<HoyPlayer>() != null).transform.position, () =>
+                {
+                    card.netIdentity.AssignClientAuthority(connToClient);
+                    card.SetSyncDirection(SyncDirection.ClientToServer);
+                });
+                card.netIdentity.RemoveClientAuthority();
+                // SetTargetOnLocalPlayer(card);
             } else
             {
                 if (_playedCardSlotPack.Count % 2 == 0)
@@ -150,7 +157,14 @@ namespace Hoy
                     ChangeGameState(GameState.PlayerTurn);
                 } else
                 {
-                    SetTargetOnLocalPlayer(card);
+                    card.SetTargetServer(connToClient.owned.First(_ => _.GetComponent<HoyPlayer>() != null).transform.position,
+                        () =>
+                        {
+                            card.netIdentity.AssignClientAuthority(connToClient);
+                            card.SetSyncDirection(SyncDirection.ClientToServer);
+                        });
+                    card.netIdentity.RemoveClientAuthority();
+                    // SetTargetOnLocalPlayer(card);
                 }
             }
         }
@@ -163,11 +177,11 @@ namespace Hoy
             _playedCardSlotPack.AddCard(card);
         }
 
-        private void SetTargetOnLocalPlayer(Card card)
-        {
-            var connToClient = card.connectionToClient;
-            card.RpcSetTargetOnLocalPlayer(connToClient, connToClient.owned.First(_ => _.GetComponent<HoyPlayer>() != null).transform.position);
-        }
+        // private void SetTargetOnLocalPlayer(Card card)
+        // {
+        //     var connToClient = card.connectionToClient;
+        //     card.RpcSetTargetOnLocalPlayer(connToClient, connToClient.owned.First(_ => _.GetComponent<HoyPlayer>() != null).transform.position);
+        // }
 
         private void OnWhosNextMoveChanged(HoyPlayer oldValue, HoyPlayer newValue)
         {

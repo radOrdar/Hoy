@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using DG.Tweening;
 using Hoy.StaticData;
@@ -44,19 +45,38 @@ namespace Hoy
         }
 
         [Server]
-        public void SetTargetServer(Vector3 newTarget)
+        public void SetTargetServer(Vector3 newTarget, Action onComplete = null)
         {
             _target = newTarget;
-            DOTween.Sequence().Append(transform.DOMove(newTarget, cardDealMoveTime));
+            var sequence = DOTween.Sequence();
+            sequence.Append(transform.DOMove(newTarget, cardDealMoveTime));
+            if (onComplete != null)
+            {
+                sequence.AppendInterval(0.2f);
+                sequence.AppendCallback(() => onComplete());
+            }
         }
 
-        [TargetRpc]
+        /*[TargetRpc]
         public void RpcSetTargetOnLocalPlayer(NetworkConnectionToClient conn, Vector3 newTarget)
         {
             _target = newTarget;
             _dragControl.enabled = false;
             DOTween.Sequence().Append(transform.DOMove(newTarget, cardDealMoveTime))
                 .AppendCallback(() => _dragControl.enabled = true);
+        }*/
+        
+        [Server]
+        public void SetSyncDirection(SyncDirection newSyncDirection)
+        {
+            GetComponent<NetworkTransformReliable>().syncDirection = newSyncDirection;
+            RpcSetSyncDirection(newSyncDirection);
+        }
+
+        [ClientRpc]
+        private void RpcSetSyncDirection(SyncDirection newSyncDirection)
+        {
+            GetComponent<NetworkTransformReliable>().syncDirection = newSyncDirection;
         }
 
         [ClientRpc]
