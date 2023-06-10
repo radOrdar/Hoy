@@ -10,6 +10,9 @@ namespace Hoy
         private Vector2 _horizontalOffset;
         private int _orderInLayer;
         private NetworkConnectionToClient _connectionToClient;
+        
+        private List<Card> _bank = new();
+        private int bankOrderInLayer;
 
         private List<Card> _cards = new();
         private int _nextOrderInLayer;
@@ -25,7 +28,7 @@ namespace Hoy
 
         public void AddCard(Card card)
         {
-            card.RpcSetOrderInLayer(_orderInLayer++);
+            card.RpcSetOrderInLayer(_nextOrderInLayer++);
             card.SetTargetServer(_initialPoint + _horizontalOffset * _cards.Count, () => card.netIdentity.AssignClientAuthority(_connectionToClient));
             _cards.Add(card);
         }
@@ -40,6 +43,13 @@ namespace Hoy
                 _cards[i].RpcSetOrderInLayer(_nextOrderInLayer++);
                 _cards[i].RpcSetTargetOnLocalPlayer(_connectionToClient, _initialPoint + _horizontalOffset * i);
             }
+        }
+
+        public void AddToBank(Card card)
+        {
+            card.RpcSetOrderInLayer(bankOrderInLayer++);
+            card.SetTargetServer(_initialPoint - _horizontalOffset.normalized*6);
+            _bank.Add(card);
         }
     }
 }

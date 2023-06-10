@@ -41,7 +41,7 @@ namespace Hoy
 
       public void SetMoveNextName(string name)
       {
-         whosMoveNameText.SetText($"{name} next move");
+         whosMoveNameText.SetText(name != null ? $"{name} next move" : "");
       }
    }
 }

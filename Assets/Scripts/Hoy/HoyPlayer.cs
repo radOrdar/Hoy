@@ -28,8 +28,8 @@ namespace Hoy
 		/// </summary>
 		public override void OnStartServer()
 		{
-			transform.up = -transform.position;
-			
+			transform.rotation = Quaternion.LookRotation(Vector3.forward, -transform.position);
+
 			_playerCardSlotPack = new PlayerCardSlotPack(transform.TransformPoint(_localOffsetCardPack), transform.right * _horizontalOffset, 10, connectionToClient);
 		}
 
@@ -108,6 +108,12 @@ namespace Hoy
 		public void TakeCard(Card card)
 		{
 			_playerCardSlotPack.AddCard(card);
+		}
+
+		[Server]
+		public void AddToBank(Card card)
+		{
+			_playerCardSlotPack.AddToBank(card);
 		}
 
 		[Command]

@@ -42,7 +42,11 @@ namespace Hoy
             {
                 _nextVerticalOffset = _verticalOffset;
             }
-            
+        }
+
+        public List<Card> GetCards()
+        {
+            return new List<Card>(_cards);
         }
     }
 }

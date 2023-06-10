@@ -147,14 +147,7 @@ namespace Hoy
         [Server]
         private void StartGame()
         {
-            GameManager.singleton.Init();
-            foreach (HoyPlayer hoyPlayer in players)
-            {
-                hoyPlayer.RPCGameStarted();
-            }
-
-            GameManager.singleton.hoyPlayers = players;
-            GameManager.singleton.DealTheCards();
+            GameManager.singleton.StartGame(players);
         }
 
         /// <summary>
