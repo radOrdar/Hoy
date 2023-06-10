@@ -21,6 +21,7 @@ namespace Hoy
 
         private CardStaticData _staticData;
         public int Value => _staticData.value;
+        public CardFaceType FaceType => _staticData.faceType;
 
         public override void OnStartAuthority()
         {
