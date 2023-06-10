@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using Hoy.StaticData;
 using UnityEngine;
 
 namespace Hoy
@@ -14,6 +16,7 @@ namespace Hoy
         private int _nextOrderInLayer;
         private float _nextHorizontalOffset;
         private float _nextVerticalOffset;
+        public HoyPlayer Winner { get; private set; }
 
         public PlayedOutCardSlotPack(Vector2 startPoint, int orderInLayer, float horizontalOffset, float verticalOffset)
         {
@@ -27,8 +30,12 @@ namespace Hoy
         public int Count => _cards.Count;
         public Card LastCard => _cards[^1];
 
-        public void AddCard(Card card)
+        public void AddCard(Card card, HoyPlayer player)
         {
+            if (card.FaceType == CardFaceType.FInfinity || _cards.All(c => card.Value >= c.Value))
+            {
+                Winner = player;
+            }
             card.RpcSetOrderInLayer(_nextOrderInLayer);
             _nextOrderInLayer++;
             card.SetTargetServer(startPoint + new Vector2(_nextHorizontalOffset, _nextVerticalOffset));

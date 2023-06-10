@@ -179,51 +179,48 @@ namespace Hoy
                         card.netIdentity.RemoveClientAuthority();
                     } else
                     {
-                        PlayCard(card);
+                        PlayCard(card, player);
                         CurrentGameState = GameState.PlayerTurn;
                         _playerNodes = _playerNodes.Next;
                         WhosNextMove = _playerNodes.Value;
                     }
                 } else
                 {
-                    if (card.FaceType == CardFaceType.FInfinity || card.Value > _playedOutCardSlotPack.LastCard.Value)
+                    if (card.Value == _playedOutCardSlotPack.LastCard.Value)
                     {
-                        StartCoroutine(FromTableToBankRoutine(card, player));
-                    } else if (card.Value == _playedOutCardSlotPack.LastCard.Value)
-                    {
-                        PlayCard(card);
+                        PlayCard(card, player);
                         CurrentGameState = GameState.PlayerTurn;
                         _playerNodes = _playerNodes.Next;
                         WhosNextMove = _playerNodes.Value;
-                    } else
-                    {
-                        player.TakeCard(card);
-                        card.netIdentity.RemoveClientAuthority();
+                    } else {
+                        PlayCard(card, player);
+                        StartCoroutine(FromTableToBankRoutine(card));
                     }
                 }
             }
         }
 
         [Server]
-        private IEnumerator FromTableToBankRoutine(Card card, HoyPlayer player)
+        private IEnumerator FromTableToBankRoutine(Card card)
         {
             WhosNextMove = null;
             CurrentGameState = GameState.DealingCards;
-            PlayCard(card);
             yield return new WaitForSeconds(2);
             List<Card> cards = _playedOutCardSlotPack.GetCards();
-            yield return StartCoroutine(DealCardsToOnePlayerRoutine((p, c) => p.AddToBank(c), player, cards));
-            WhosNextMove = _playerNodes.Value;
+            yield return StartCoroutine(DealCardsToOnePlayerRoutine((p, c) => p.AddToBank(c), _playedOutCardSlotPack.Winner, cards));
+            WhosNextMove = _playedOutCardSlotPack.Winner;
+            while (_playerNodes.Value != WhosNextMove)
+                _playerNodes = _playerNodes.Next;
             CurrentGameState = GameState.PlayerTurn;
             NewPlayedCardSlotPack();
         }
 
         [Server]
-        private void PlayCard(Card card)
+        private void PlayCard(Card card, HoyPlayer player)
         {
             card.netIdentity.RemoveClientAuthority();
             card.RpcShowCardToAllClients();
-            _playedOutCardSlotPack.AddCard(card);
+            _playedOutCardSlotPack.AddCard(card, player);
         }
 
         private void OnWhosNextMoveChanged(HoyPlayer oldValue, HoyPlayer newValue)
