@@ -10,19 +10,20 @@ namespace Hoy
         private Vector2 _horizontalOffset;
         private int _orderInLayer;
         private NetworkConnectionToClient _connectionToClient;
-        
+
         private List<Card> _bank = new();
         private int bankOrderInLayer;
 
         private List<Card> _cards = new();
         private int _nextOrderInLayer;
+
         public PlayerCardSlotPack(Vector2 initialPoint, Vector2 horizontalOffset, int orderInLayer, NetworkConnectionToClient connectionToClient)
         {
             _initialPoint = initialPoint;
             _horizontalOffset = horizontalOffset;
             _orderInLayer = orderInLayer;
             _connectionToClient = connectionToClient;
-            
+
             _nextOrderInLayer = orderInLayer;
         }
 
@@ -48,8 +49,10 @@ namespace Hoy
         public void AddToBank(Card card)
         {
             card.RpcSetOrderInLayer(bankOrderInLayer++);
-            card.SetTargetServer(_initialPoint - _horizontalOffset.normalized*6);
+            card.SetTargetServer(_initialPoint - _horizontalOffset.normalized * 6);
             _bank.Add(card);
         }
+
+        public bool IsEmpty() => _cards.Count == 0;
     }
 }

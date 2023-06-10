@@ -63,6 +63,11 @@ namespace Hoy
             }
 
             //Deal cards to players
+            DealCardsToPlayersFromDeck();
+        }
+
+        private void DealCardsToPlayersFromDeck()
+        {
             List<List<Card>> cardPacks = new List<List<Card>>();
             cardPacks.Add(_cardsSpawned.GetRange(_cardsSpawned.Count - 9, 9));
             _cardsSpawned.RemoveRange(_cardsSpawned.Count - 9, 9);
@@ -173,17 +178,17 @@ namespace Hoy
             {
                 if (_playedOutCardSlotPack.Count % 2 == 0)
                 {
-                    if (card.FaceType == CardFaceType.FInfinity)
-                    {
-                        player.TakeCard(card);
-                        card.netIdentity.RemoveClientAuthority();
-                    } else
-                    {
+                    // if (card.FaceType == CardFaceType.FInfinity)
+                    // {
+                    //     player.TakeCard(card);
+                    //     card.netIdentity.RemoveClientAuthority();
+                    // } else
+                    // {
                         PlayCard(card, player);
                         CurrentGameState = GameState.PlayerTurn;
                         _playerNodes = _playerNodes.Next;
                         WhosNextMove = _playerNodes.Value;
-                    }
+                    // }
                 } else
                 {
                     if (card.Value == _playedOutCardSlotPack.LastCard.Value)
@@ -194,25 +199,36 @@ namespace Hoy
                         WhosNextMove = _playerNodes.Value;
                     } else {
                         PlayCard(card, player);
-                        StartCoroutine(FromTableToBankRoutine(card));
+                        StartCoroutine(FromTableToBankRoutine());
                     }
                 }
             }
         }
 
         [Server]
-        private IEnumerator FromTableToBankRoutine(Card card)
+        private IEnumerator FromTableToBankRoutine()
         {
             WhosNextMove = null;
             CurrentGameState = GameState.DealingCards;
             yield return new WaitForSeconds(2);
-            List<Card> cards = _playedOutCardSlotPack.GetCards();
-            yield return StartCoroutine(DealCardsToOnePlayerRoutine((p, c) => p.AddToBank(c), _playedOutCardSlotPack.Winner, cards));
+            yield return StartCoroutine(DealCardsToOnePlayerRoutine((p, c) => p.AddToBank(c), _playedOutCardSlotPack.Winner, _playedOutCardSlotPack.GetCards()));
             WhosNextMove = _playedOutCardSlotPack.Winner;
             while (_playerNodes.Value != WhosNextMove)
                 _playerNodes = _playerNodes.Next;
             CurrentGameState = GameState.PlayerTurn;
             NewPlayedCardSlotPack();
+
+            if (_hoyPlayers.All(_ => _.IsEmpty()))
+            {
+                if (_cardsSpawned.Count == 0)
+                {
+                    // GameFinished();
+                } else
+                {
+                    DealCardsToPlayersFromDeck();
+                }
+            }
+                
         }
 
         [Server]

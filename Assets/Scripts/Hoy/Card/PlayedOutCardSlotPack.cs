@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Hoy.StaticData;
 using UnityEngine;
 
 namespace Hoy
@@ -32,7 +31,7 @@ namespace Hoy
 
         public void AddCard(Card card, HoyPlayer player)
         {
-            if (card.FaceType == CardFaceType.FInfinity || _cards.All(c => card.Value >= c.Value))
+            if (_cards.All(c => card.Value >= c.Value))
             {
                 Winner = player;
             }

@@ -121,5 +121,10 @@ namespace Hoy
 		{
 			_playerCardSlotPack.DeleteCard(card);
 		}
+
+		public bool IsEmpty()
+		{
+			return _playerCardSlotPack.IsEmpty();
+		}
 	}
 }
