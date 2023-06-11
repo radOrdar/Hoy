@@ -4,6 +4,6 @@
     {
         DealingCards,
         PlayerTurn,
-        GameEnded
+        GameOver
     }
 }

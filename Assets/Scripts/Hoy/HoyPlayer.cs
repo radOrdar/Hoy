@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Mirror;
 using UnityEngine;
 
@@ -18,7 +19,7 @@ namespace Hoy
 		public string PlayerName { get; set; }
 
 		private PlayerCardSlotPack _playerCardSlotPack;
-	
+
 		#region Start & Stop Callbacks
 
 		/// <summary>
@@ -72,7 +73,6 @@ namespace Hoy
 			{
 				FindObjectOfType<UI>().SetFoePlayerName(newName);
 			}
-
 		}
 
 		/// <summary>
@@ -95,6 +95,14 @@ namespace Hoy
 		public override void OnStopAuthority() { }
 
 		#endregion
+
+		[ClientRpc]
+		public void SetGameOverUI()
+		{
+			var ui = FindObjectOfType<UI>();
+			ui.DeactivateWhosMoveNameText();
+			ui.ActivateScores();
+		}
 
 		[ClientRpc]
 		public void RPCGameStarted()
@@ -122,9 +130,26 @@ namespace Hoy
 			_playerCardSlotPack.DeleteCard(card);
 		}
 
+		[Server]
 		public bool IsEmpty()
 		{
 			return _playerCardSlotPack.IsEmpty();
+		}
+
+		public List<Card> GetBank() => 
+			_playerCardSlotPack.GetBank();
+
+		[ClientRpc]
+		public void RpcSetScore(int score, string playerName)
+		{
+			var ui = FindObjectOfType<UI>();
+			if (NetworkClient.localPlayer.GetComponent<HoyPlayer>().PlayerName == playerName)
+			{
+				ui.SetPlayerScore(score);
+			} else
+			{
+				ui.SetFoeScore(score);
+			}
 		}
 	}
 }

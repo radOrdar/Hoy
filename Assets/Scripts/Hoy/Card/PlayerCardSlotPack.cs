@@ -54,5 +54,8 @@ namespace Hoy
         }
 
         public bool IsEmpty() => _cards.Count == 0;
+
+        public List<Card> GetBank() => 
+            _bank;
     }
 }

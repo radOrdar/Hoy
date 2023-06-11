@@ -10,6 +10,8 @@ namespace Hoy
       [SerializeField] private TextMeshProUGUI bottomPlayerNameText;
       [SerializeField] private TextMeshProUGUI topPlayerNameText;
       [SerializeField] private TextMeshProUGUI whosMoveNameText;
+      [SerializeField] private TextMeshProUGUI playerScore;
+      [SerializeField] private TextMeshProUGUI foeScore;
 
       private void Awake()
       {
@@ -18,15 +20,11 @@ namespace Hoy
          whosMoveNameText.SetText("");
       }
 
-      public void DeactivateWaitPanel()
-      {
+      public void DeactivateWaitPanel() => 
          waitPlayerPanel.SetActive(false);
-      }
 
-      public void ActivateInGameUI()
-      {
+      public void ActivateInGameUI() => 
          inGameUI.SetActive(true);
-      }
 
       public void SetLocalPlayerName(string newName)
       {
@@ -34,14 +32,29 @@ namespace Hoy
          bottomPlayerNameText.text = newName;
       }
 
-      public void SetFoePlayerName(string newName)
-      {
+      public void SetFoePlayerName(string newName) =>
          topPlayerNameText.SetText(newName);
+
+      public void SetMoveNextName(string name) =>
+         whosMoveNameText.SetText(name != null ? $"{name} next move" : "");
+
+      public void DeactivateWhosMoveNameText() => 
+         whosMoveNameText.gameObject.SetActive(false);
+
+      public void ActivateScores()
+      {
+         playerScore.gameObject.SetActive(true);
+         foeScore.gameObject.SetActive(true);
       }
 
-      public void SetMoveNextName(string name)
+      public void SetPlayerScore(int score)
       {
-         whosMoveNameText.SetText(name != null ? $"{name} next move" : "");
+         playerScore.SetText(score.ToString());
+      }
+
+      public void SetFoeScore(int score)
+      {
+         foeScore.SetText(score.ToString());
       }
    }
 }

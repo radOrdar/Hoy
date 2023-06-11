@@ -222,13 +222,42 @@ namespace Hoy
             {
                 if (_cardsSpawned.Count == 0)
                 {
-                    // GameFinished();
+                    GameOver();
                 } else
                 {
                     DealCardsToPlayersFromDeck();
                 }
             }
                 
+        }
+
+        private void GameOver()
+        {
+            CurrentGameState = GameState.GameOver;
+            foreach (var player in _hoyPlayers)
+            {
+                player.SetGameOverUI();
+            }
+
+            StartCoroutine(CountPointsRoutine());
+            
+            IEnumerator CountPointsRoutine()
+            {
+                foreach (var player in _hoyPlayers)
+                {
+                    var target = player.transform.TransformPoint(Vector3.up * 6.5f);
+                    int score = 0;
+                    int orderInLayer = 0;
+                    foreach (var card in player.GetBank())
+                    {
+                        score += card.FaceType == CardFaceType.FInfinity ? 0 : card.Value;
+                        var score1 = score;
+                        card.SetTargetServer(target, () => player.RpcSetScore(score1, player.PlayerName));
+                        card.RpcSetOrderInLayer(orderInLayer++);
+                        yield return new WaitForSeconds(0.9f);
+                    }
+                }
+            }
         }
 
         [Server]
