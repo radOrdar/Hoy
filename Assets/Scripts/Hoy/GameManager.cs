@@ -20,10 +20,8 @@ namespace Hoy
 
         private List<HoyPlayer> _hoyPlayers;
         private ListNode<HoyPlayer> _playerNodes;
-        // private int _lastPlayerMovedIndex;
 
         private List<Card> _cardsSpawned = new();
-        // private int _nextCardIndex;
 
         [field: SyncVar]
         public GameState CurrentGameState { get; set; }
@@ -81,8 +79,7 @@ namespace Hoy
                 {
                     yield return StartCoroutine(DealCardsToOnePlayerRoutine((p, c) => p.TakeCard(c), players[i], listCards[i]));
                 }
-
-                // onComplete?.Invoke();
+                
                 CurrentGameState = GameState.PlayerTurn;
                 WhosNextMove = _playerNodes.Value;
             }
@@ -91,7 +88,7 @@ namespace Hoy
         [Server]
         private void NewPlayedCardSlotPack()
         {
-            _playedOutCardSlotPack = new PlayedOutCardSlotPack(new Vector2(-7.9f, 1f), 0, 4.3f, -3.2f);
+            _playedOutCardSlotPack = new PlayedOutCardSlotPack(new Vector2(-7.9f, 1f), 0, 4.5f, 3f);
         }
 
         [Server]
@@ -140,32 +137,6 @@ namespace Hoy
             }
         }
 
-        // [Server]
-        // private void ChangeGameState(GameState state)
-        // {
-        //     WhosNextMove = null;
-        //     switch (state)
-        //     {
-        //         case GameState.PlayerTurn:
-        //             // WhosNextMove = _hoyPlayers[NextPlayerIndex()];
-        //             WhosNextMove = _playerNodes.Value;
-        //             _playerNodes = _playerNodes.Next;
-        //             CurrentGameState = GameState.PlayerTurn;
-        //             break;
-        //         case GameState.DealingCards:
-        //             CurrentGameState = GameState.DealingCards;
-        //             break;
-        //     }
-        // }
-
-        // [Server]
-        // private int NextPlayerIndex()
-        // {
-        //     _lastPlayerMovedIndex++;
-        //     if (_lastPlayerMovedIndex >= _hoyPlayers.Count) _lastPlayerMovedIndex = 0;
-        //     return _lastPlayerMovedIndex;
-        // }
-
         [Server]
         public void DragEnded(Card card)
         {
@@ -178,17 +149,10 @@ namespace Hoy
             {
                 if (_playedOutCardSlotPack.Count % 2 == 0)
                 {
-                    // if (card.FaceType == CardFaceType.FInfinity)
-                    // {
-                    //     player.TakeCard(card);
-                    //     card.netIdentity.RemoveClientAuthority();
-                    // } else
-                    // {
-                        PlayCard(card, player);
-                        CurrentGameState = GameState.PlayerTurn;
-                        _playerNodes = _playerNodes.Next;
-                        WhosNextMove = _playerNodes.Value;
-                    // }
+                    PlayCard(card, player);
+                    CurrentGameState = GameState.PlayerTurn;
+                    _playerNodes = _playerNodes.Next;
+                    WhosNextMove = _playerNodes.Value;
                 } else
                 {
                     if (card.Value == _playedOutCardSlotPack.LastCard.Value)
@@ -197,7 +161,8 @@ namespace Hoy
                         CurrentGameState = GameState.PlayerTurn;
                         _playerNodes = _playerNodes.Next;
                         WhosNextMove = _playerNodes.Value;
-                    } else {
+                    } else
+                    {
                         PlayCard(card, player);
                         StartCoroutine(FromTableToBankRoutine());
                     }
@@ -212,10 +177,8 @@ namespace Hoy
             CurrentGameState = GameState.DealingCards;
             yield return new WaitForSeconds(2);
             yield return StartCoroutine(DealCardsToOnePlayerRoutine((p, c) => p.AddToBank(c), _playedOutCardSlotPack.Winner, _playedOutCardSlotPack.GetCards()));
-            WhosNextMove = _playedOutCardSlotPack.Winner;
-            while (_playerNodes.Value != WhosNextMove)
+            while (_playerNodes.Value != _playedOutCardSlotPack.Winner)
                 _playerNodes = _playerNodes.Next;
-            CurrentGameState = GameState.PlayerTurn;
             NewPlayedCardSlotPack();
 
             if (_hoyPlayers.All(_ => _.IsEmpty()))
@@ -227,8 +190,11 @@ namespace Hoy
                 {
                     DealCardsToPlayersFromDeck();
                 }
+            } else
+            {
+                WhosNextMove = _playerNodes.Value;
+                CurrentGameState = GameState.PlayerTurn;
             }
-                
         }
 
         private void GameOver()
@@ -240,7 +206,7 @@ namespace Hoy
             }
 
             StartCoroutine(CountPointsRoutine());
-            
+
             IEnumerator CountPointsRoutine()
             {
                 foreach (var player in _hoyPlayers)
@@ -248,7 +214,9 @@ namespace Hoy
                     var target = player.transform.TransformPoint(Vector3.up * 6.5f);
                     int score = 0;
                     int orderInLayer = 0;
-                    foreach (var card in player.GetBank())
+                    var cards = player.GetBank();
+                    cards.Reverse();
+                    foreach (var card in cards)
                     {
                         score += card.FaceType == CardFaceType.FInfinity ? 0 : card.Value;
                         var score1 = score;

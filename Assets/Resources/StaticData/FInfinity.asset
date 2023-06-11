@@ -15,5 +15,5 @@ MonoBehaviour:
   faceType: 12
   faceSprite: {fileID: 21300000, guid: 2ceb8f2d98c907846b43d17820787bf5, type: 3}
   shirtSprite: {fileID: 21300000, guid: 5475e0e5a512d7b4bb9d2159232d1097, type: 3}
-  value: 0
+  value: 10000
   numberInDeck: 1

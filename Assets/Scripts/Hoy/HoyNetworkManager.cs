@@ -11,7 +11,8 @@ namespace Hoy
 {
     public class HoyNetworkManager : NetworkManager
     {
-        private List<string> namesList = new(){ "Snow", "Serenity", "Nuzzle", "Climax", "Saki", "Eve", "Zlatan", "Remy"};
+        private List<string> namesList = new() { "Snow", "Serenity", "Nuzzle", "Climax", "Saki", "Eve", "Zlatan", "Remy" };
+
         // Overrides the base singleton so we don't
         // have to cast to this type everywhere.
         public static new HoyNetworkManager singleton { get; private set; }
@@ -27,7 +28,7 @@ namespace Hoy
             base.Awake();
             singleton = this;
         }
-        
+
 
         #region Start & Stop
 
@@ -67,13 +68,15 @@ namespace Hoy
         /// <para>This allows server to do work / cleanup / prep before the scene changes.</para>
         /// </summary>
         /// <param name="newSceneName">Name of the scene that's about to be loaded</param>
-        public override void OnServerChangeScene(string newSceneName) { }
+        public override void OnServerChangeScene(string newSceneName)
+        { }
 
         /// <summary>
         /// Called on the server when a scene is completed loaded, when the scene load was initiated by the server with ServerChangeScene().
         /// </summary>
         /// <param name="sceneName">The name of the new scene.</param>
-        public override void OnServerSceneChanged(string sceneName) { }
+        public override void OnServerSceneChanged(string sceneName)
+        { }
 
         /// <summary>
         /// Called from ClientChangeScene immediately before SceneManager.LoadSceneAsync is executed
@@ -82,7 +85,8 @@ namespace Hoy
         /// <param name="newSceneName">Name of the scene that's about to be loaded</param>
         /// <param name="sceneOperation">Scene operation that's about to happen</param>
         /// <param name="customHandling">true to indicate that scene loading will be handled through overrides</param>
-        public override void OnClientChangeScene(string newSceneName, SceneOperation sceneOperation, bool customHandling) { }
+        public override void OnClientChangeScene(string newSceneName, SceneOperation sceneOperation, bool customHandling)
+        { }
 
         /// <summary>
         /// Called on clients when a scene has completed loaded, when the scene load was initiated by the server.
@@ -103,9 +107,7 @@ namespace Hoy
         /// </summary>
         /// <param name="conn">Connection from client.</param>
         public override void OnServerConnect(NetworkConnectionToClient conn)
-        {
-        
-        }
+        { }
 
         /// <summary>
         /// Called on the server when a client is ready.
@@ -129,14 +131,15 @@ namespace Hoy
                 conn.Disconnect();
                 return;
             }
+
             base.OnServerAddPlayer(conn);
             var newPlayer = conn.identity.GetComponent<HoyPlayer>();
             players.Add(newPlayer);
-            
+
             name = namesList[Random.Range(0, namesList.Count)];
             newPlayer.PlayerName = name;
             namesList.Remove(name);
-            
+
 
             if (players.Count > 1)
             {
@@ -167,7 +170,8 @@ namespace Hoy
         /// </summary>
         /// <param name="conn">Connection of the client...may be null</param>
         /// <param name="exception">Exception thrown from the Transport.</param>
-        public override void OnServerError(NetworkConnectionToClient conn, TransportError transportError, string message) { }
+        public override void OnServerError(NetworkConnectionToClient conn, TransportError transportError, string message)
+        { }
 
         #endregion
 
@@ -186,19 +190,22 @@ namespace Hoy
         /// Called on clients when disconnected from a server.
         /// <para>This is called on the client when it disconnects from the server. Override this function to decide what happens when the client disconnects.</para>
         /// </summary>
-        public override void OnClientDisconnect() { }
+        public override void OnClientDisconnect()
+        { }
 
         /// <summary>
         /// Called on clients when a servers tells the client it is no longer ready.
         /// <para>This is commonly used when switching scenes.</para>
         /// </summary>
-        public override void OnClientNotReady() { }
+        public override void OnClientNotReady()
+        { }
 
         /// <summary>
         /// Called on client when transport raises an exception.</summary>
         /// </summary>
         /// <param name="exception">Exception thrown from the Transport.</param>
-        public override void OnClientError(TransportError transportError, string message) { }
+        public override void OnClientError(TransportError transportError, string message)
+        { }
 
         #endregion
 
@@ -212,36 +219,49 @@ namespace Hoy
         /// This is invoked when a host is started.
         /// <para>StartHost has multiple signatures, but they all cause this hook to be called.</para>
         /// </summary>
-        public override void OnStartHost() { }
+        public override void OnStartHost()
+        { }
 
         /// <summary>
         /// This is invoked when a server is started - including when a host is started.
         /// <para>StartServer has multiple signatures, but they all cause this hook to be called.</para>
         /// </summary>
         public override void OnStartServer()
-        {
-            
-        }
+        { }
 
         /// <summary>
         /// This is invoked when the client is started.
         /// </summary>
-        public override void OnStartClient() { }
+        public override void OnStartClient()
+        { }
 
         /// <summary>
         /// This is called when a host is stopped.
         /// </summary>
-        public override void OnStopHost() { }
+        public override void OnStopHost()
+        { }
 
         /// <summary>
         /// This is called when a server is stopped - including when a host is stopped.
         /// </summary>
-        public override void OnStopServer() { }
+        public override void OnStopServer()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#endif
+            Application.Quit();
+        }
 
         /// <summary>
         /// This is called when a client is stopped.
         /// </summary>
-        public override void OnStopClient() { }
+        public override void OnStopClient()
+        {
+#if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+#endif
+            Application.Quit();
+        }
 
         #endregion
     }

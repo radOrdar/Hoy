@@ -53,7 +53,7 @@ namespace Hoy
             sequence.Append(transform.DOMove(newTarget, cardDealMoveTime));
             if (onComplete != null)
             {
-                sequence.AppendInterval(0.2f);
+                sequence.AppendInterval(0.3f);
                 sequence.AppendCallback(() => onComplete());
             }
         }

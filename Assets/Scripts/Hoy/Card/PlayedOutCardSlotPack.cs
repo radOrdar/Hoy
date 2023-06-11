@@ -10,11 +10,11 @@ namespace Hoy
         private int _orderInLayer;
         private float _horizontalOffset;
         private float _verticalOffset;
-    
+
         private List<Card> _cards = new();
         private int _nextOrderInLayer;
         private float _nextHorizontalOffset;
-        private float _nextVerticalOffset;
+        
         public HoyPlayer Winner { get; private set; }
 
         public PlayedOutCardSlotPack(Vector2 startPoint, int orderInLayer, float horizontalOffset, float verticalOffset)
@@ -35,18 +35,15 @@ namespace Hoy
             {
                 Winner = player;
             }
+
             card.RpcSetOrderInLayer(_nextOrderInLayer);
             _nextOrderInLayer++;
-            card.SetTargetServer(startPoint + new Vector2(_nextHorizontalOffset, _nextVerticalOffset));
+            card.SetTargetServer(startPoint + new Vector2(_nextHorizontalOffset, Mathf.Sign(player.transform.position.y) * _verticalOffset));
             _cards.Add(card);
-            
+
             if (_cards.Count % 2 == 0)
             {
                 _nextHorizontalOffset += _horizontalOffset;
-                _nextVerticalOffset = 0;
-            } else
-            {
-                _nextVerticalOffset = _verticalOffset;
             }
         }
 
