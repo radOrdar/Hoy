@@ -161,6 +161,10 @@ namespace Hoy
                         CurrentGameState = GameState.PlayerTurn;
                         _playerNodes = _playerNodes.Next;
                         WhosNextMove = _playerNodes.Value;
+                        if (_hoyPlayers.All(_ => _.IsEmpty()))
+                        {
+                            StartCoroutine(FromTableToBankRoutine());
+                        }
                     } else
                     {
                         PlayCard(card, player);
