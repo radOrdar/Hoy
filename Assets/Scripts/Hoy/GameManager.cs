@@ -18,7 +18,7 @@ namespace Hoy
         [SerializeField] private CardStaticData[] cardStaticDatas;
         [SerializeField] private Card cardPf;
 
-        private List<HoyPlayer> _hoyPlayers;
+        private HoyPlayer[] _hoyPlayers;
         private ListNode<HoyPlayer> _playerNodes;
 
         private List<Card> _cardsSpawned = new();
@@ -38,12 +38,12 @@ namespace Hoy
         }
 
         [Server]
-        public void StartGame(List<HoyPlayer> players)
+        public void StartGame(HoyPlayer[] players)
         {
             _hoyPlayers = players;
             _playerNodes = new ListNode<HoyPlayer>(players[0]);
             var playerNodesTemp = _playerNodes;
-            for (int i = 1; i < players.Count; i++)
+            for (int i = 1; i < players.Length; i++)
             {
                 playerNodesTemp.Next = new ListNode<HoyPlayer>(players[i]);
                 playerNodesTemp = playerNodesTemp.Next;
@@ -73,9 +73,9 @@ namespace Hoy
             _cardsSpawned.RemoveRange(_cardsSpawned.Count - 9, 9);
             StartCoroutine(DealCardsToPlayersRoutine(_hoyPlayers, cardPacks));
 
-            IEnumerator DealCardsToPlayersRoutine(List<HoyPlayer> players, List<List<Card>> listCards)
+            IEnumerator DealCardsToPlayersRoutine(HoyPlayer[] players, List<List<Card>> listCards)
             {
-                for (int i = 0; i < players.Count; i++)
+                for (int i = 0; i < players.Length; i++)
                 {
                     yield return StartCoroutine(DealCardsToOnePlayerRoutine((p, c) => p.TakeCard(c), players[i], listCards[i]));
                 }

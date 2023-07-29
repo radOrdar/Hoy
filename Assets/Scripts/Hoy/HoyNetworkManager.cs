@@ -9,7 +9,7 @@ using UnityEngine;
 
 namespace Hoy
 {
-    public class HoyNetworkManager : NetworkManager
+    public class HoyNetworkManager : NetworkRoomManager
     {
         private List<string> namesList = new() { "Snow", "Serenity", "Nuzzle", "Climax", "Saki", "Eve", "Zlatan", "Remy" };
 
@@ -150,7 +150,7 @@ namespace Hoy
         [Server]
         private void StartGame()
         {
-            GameManager.singleton.StartGame(players);
+            // GameManager.singleton.StartGame(players);
         }
 
         /// <summary>
