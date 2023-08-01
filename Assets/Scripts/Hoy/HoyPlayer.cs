@@ -15,8 +15,7 @@ namespace Hoy
 	{
 		[SerializeField] private Vector2 _localOffsetCardPack;
 		[SerializeField] private float _horizontalOffset;
-		[field:SyncVar(hook = nameof(OnPlayerNameSet))]
-		public string PlayerName { get; set; }
+		[field:SyncVar(hook = nameof(OnPlayerNameSet))] public string PlayerName { get; set; }
 
 		private PlayerCardSlotPack _playerCardSlotPack;
 
@@ -97,7 +96,7 @@ namespace Hoy
 		#endregion
 
 		[ClientRpc]
-		public void SetGameOverUI()
+		public void RPCSetGameOverUI()
 		{
 			var ui = FindObjectOfType<UI>();
 			ui.DeactivateWhosMoveNameText();

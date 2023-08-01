@@ -1,6 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using Mirror;
 using UnityEngine;
 
@@ -28,8 +27,10 @@ namespace Hoy
         // Overrides the base singleton so we don't
         // have to cast to this type everywhere.
         public static HoyRoomNetworkManager Singleton => (HoyRoomNetworkManager)singleton;
+         public HoyRoomPlayer LeaderPlayer { get; set; }
 
-        private int numOfGameplayers;
+        private int _numOfGameplayers;
+        
 
         #region Server System Callbacks
 
@@ -37,7 +38,7 @@ namespace Hoy
         {
             if (sceneName == RoomScene)
             {
-                numOfGameplayers = 0;
+                _numOfGameplayers = 0;
             }
         }
 
@@ -54,29 +55,34 @@ namespace Hoy
             if (numPlayers == 1)
             {
                 roomPlayer.isLeader = true;
+                LeaderPlayer = roomPlayer;
             }
 
             name = namesList[Random.Range(0, namesList.Count)];
             roomPlayer.PlayerName = name;
             namesList.Remove(name);
         }
-        
+
         [Server]
         private IEnumerator StartGameRoutine()
         {
-            yield return null;
+            yield return new WaitForSeconds(0.2f);
             var gamePlayers = FindObjectsOfType<HoyPlayer>();
             Debug.Log($"{gamePlayers.Length} gameplayers on Scene");
-            GameManager.singleton.StartGame(gamePlayers);
+            GameManager.Instance.StartGame(gamePlayers);
         }
 
 
         public override bool OnRoomServerSceneLoadedForPlayer(NetworkConnectionToClient conn, GameObject roomPlayer, GameObject gamePlayer)
         {
-            StartCoroutine(AssignNameToGamePlayerRoutine(roomPlayer, gamePlayer));
-            numOfGameplayers++;
-            if (numOfGameplayers == numPlayers)
-                StartCoroutine(StartGameRoutine());
+            if (Utils.IsSceneActive(GameplayScene))
+            {
+                StartCoroutine(AssignNameToGamePlayerRoutine(roomPlayer, gamePlayer));
+                _numOfGameplayers++;
+                if (_numOfGameplayers == numPlayers)
+                    StartCoroutine(StartGameRoutine());
+            }
+
             return base.OnRoomServerSceneLoadedForPlayer(conn, roomPlayer, gamePlayer);
         }
 
@@ -112,20 +118,12 @@ namespace Hoy
 
         public override void OnRoomServerPlayersReady()
         {
-            var leaderPlayer = (HoyRoomPlayer)roomSlots.FirstOrDefault(_ => ((HoyRoomPlayer)_).isLeader);
-            if (leaderPlayer)
-            {
-                leaderPlayer.allPlayersReady = true;
-            }
+            LeaderPlayer.allPlayersReady = true;
         }
 
         public override void OnRoomServerPlayersNotReady()
         {
-            var leaderPlayer = (HoyRoomPlayer)roomSlots.FirstOrDefault(_ => ((HoyRoomPlayer)_).isLeader);
-            if (leaderPlayer)
-            {
-                leaderPlayer.allPlayersReady = false;
-            }
+            LeaderPlayer.allPlayersReady = true;
         }
 
         public override void OnGUI()

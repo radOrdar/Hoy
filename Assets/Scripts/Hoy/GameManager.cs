@@ -5,13 +5,14 @@ using System.Linq;
 using Hoy.StaticData;
 using Mirror;
 using UnityEngine;
+using Object = System.Object;
 using Random = UnityEngine.Random;
 
 namespace Hoy
 {
     public class GameManager : NetworkBehaviour
     {
-        public static GameManager singleton { get; private set; }
+        public static GameManager Instance { get; private set; }
 
         [SerializeField] private Transform dealZone;
         [SerializeField] private Transform cardDeckSpawnTrans;
@@ -32,9 +33,16 @@ namespace Hoy
         private Bounds _dealZoneBounds;
         private PlayedOutCardSlotPack _playedOutCardSlotPack;
 
+
         private void Awake()
         {
-            singleton = this;
+            Instance = this;
+        }
+
+        public override void OnStartClient()
+        {
+            var leaderRoomPlayer = HoyRoomNetworkManager.Singleton.LeaderPlayer;
+            FindObjectOfType<UI>().SetRoundsInfo(leaderRoomPlayer.CurrentRound, leaderRoomPlayer.NumOfRounds);
         }
 
         [Server]
@@ -206,11 +214,12 @@ namespace Hoy
             CurrentGameState = GameState.GameOver;
             foreach (var player in _hoyPlayers)
             {
-                player.SetGameOverUI();
+                player.RPCSetGameOverUI();
             }
 
             StartCoroutine(CountPointsRoutine());
-
+            //Set Winner
+            //StartNextRound || Close Game
             IEnumerator CountPointsRoutine()
             {
                 foreach (var player in _hoyPlayers)

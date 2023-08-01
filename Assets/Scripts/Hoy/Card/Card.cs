@@ -42,7 +42,7 @@ namespace Hoy
         [Command]
         public void CmdOnEndDrag()
         {
-            GameManager.singleton.DragEnded(this);
+            GameManager.Instance.DragEnded(this);
         }
 
         [Server]

@@ -12,6 +12,7 @@ namespace Hoy
       [SerializeField] private TextMeshProUGUI whosMoveNameText;
       [SerializeField] private TextMeshProUGUI playerScore;
       [SerializeField] private TextMeshProUGUI foeScore;
+      [SerializeField] private TextMeshProUGUI roundsText;
 
       private void Awake()
       {
@@ -55,6 +56,11 @@ namespace Hoy
       public void SetFoeScore(int score)
       {
          foeScore.SetText(score.ToString());
+      }
+
+      public void SetRoundsInfo(int currentRound, int numberOfRounds)
+      {
+         roundsText.SetText($"Round {currentRound}/{numberOfRounds}");
       }
    }
 }
