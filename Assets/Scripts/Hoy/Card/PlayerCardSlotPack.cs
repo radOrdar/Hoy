@@ -42,7 +42,7 @@ namespace Hoy
             for (int i = 0; i < _cards.Count; i++)
             {
                 _cards[i].RpcSetOrderInLayer(_nextOrderInLayer++);
-                _cards[i].RpcSetTargetOnLocalPlayer(_connectionToClient, _initialPoint + _horizontalOffset * i);
+                _cards[i].SetTargetServer(_initialPoint + _horizontalOffset * i);
             }
         }
 

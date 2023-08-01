@@ -16,6 +16,10 @@ namespace Hoy
         public override void OnStartClient()
         {
             mainCamera = Camera.main;
+        }
+
+        public override void OnStartServer()
+        {
             cachedTransform = transform;
         }
 
@@ -39,8 +43,14 @@ namespace Hoy
                 OnStartDrag();
             }
             Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
-            
-            cachedTransform.position = new Vector3(mousePos.x, mousePos.y, cachedTransform.position.z);
+
+            CmdMoveCard(mousePos.x, mousePos.y);
+        }
+
+        [Command]
+        private void CmdMoveCard(float newX, float newY)
+        {
+            cachedTransform.position = new Vector3(newX, newY, cachedTransform.position.z);
         }
 
         [ClientCallback]
