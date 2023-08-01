@@ -27,17 +27,19 @@ namespace Hoy
         [field: SyncVar] public int CurrentRound { get; private set; } = 0;
 
         [field: SyncVar] public string PlayerName { get; set; }
+        [field: SyncVar] public int Wins { get; set; }
 
         #region Optional UI
         
       
         public override void OnGUI()
         {
-            if (!Utils.IsSceneActive(HoyRoomNetworkManager.Singleton.RoomScene))
+            var netManager = HoyRoomNetworkManager.Singleton;
+            if (!Utils.IsSceneActive(netManager.RoomScene))
                 return;
 
             
-            HoyRoomPlayer leaderPlayer = HoyRoomNetworkManager.Singleton.LeaderPlayer;
+            HoyRoomPlayer leaderPlayer = netManager.LeaderPlayer;
 
             GUILayout.BeginArea(new Rect(20f + (index * 150), 150f, 140f, 130f));
 

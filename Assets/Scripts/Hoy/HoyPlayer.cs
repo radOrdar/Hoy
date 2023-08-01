@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Mirror;
 using UnityEngine;
 
@@ -16,6 +17,7 @@ namespace Hoy
 		[SerializeField] private Vector2 _localOffsetCardPack;
 		[SerializeField] private float _horizontalOffset;
 		[field:SyncVar(hook = nameof(OnPlayerNameSet))] public string PlayerName { get; set; }
+		[field:SyncVar]public int Score { get; set; }
 
 		private PlayerCardSlotPack _playerCardSlotPack;
 
@@ -149,6 +151,22 @@ namespace Hoy
 			{
 				ui.SetFoeScore(score);
 			}
+		}
+
+		[ClientRpc]
+		public void RpcShowWinner(HoyPlayer winnerOfRound)
+		{
+			var ui = FindObjectOfType<UI>();
+			ui.DeactivatePlayerNames();
+			ui.DeactivateScoreTexts();
+			ui.ShowWinner(winnerOfRound.PlayerName, winnerOfRound.Score);
+		}
+
+		[ClientRpc]
+		public void RpcShowSeriesStat()
+		{
+			var ui = FindObjectOfType<UI>();
+			ui.ShowSeriesStat(HoyRoomNetworkManager.Singleton.roomSlots.Cast<HoyRoomPlayer>().ToArray());
 		}
 	}
 }

@@ -197,7 +197,7 @@ namespace Hoy
             {
                 if (_cardsSpawned.Count == 0)
                 {
-                    GameOver();
+                    StartCoroutine(GameOver());
                 } else
                 {
                     DealCardsToPlayersFromDeck();
@@ -209,7 +209,7 @@ namespace Hoy
             }
         }
 
-        private void GameOver()
+        private IEnumerator GameOver()
         {
             CurrentGameState = GameState.GameOver;
             foreach (var player in _hoyPlayers)
@@ -217,8 +217,35 @@ namespace Hoy
                 player.RPCSetGameOverUI();
             }
 
-            StartCoroutine(CountPointsRoutine());
-            //Set Winner
+            yield return StartCoroutine(CountPointsRoutine());
+            var winnerOfRound = _hoyPlayers.OrderByDescending(_ => _.Score).First();
+            var networkManager = HoyRoomNetworkManager.Singleton;
+            var hoyRoomPlayers = networkManager.roomSlots.Cast<HoyRoomPlayer>();
+            var roomPlayerOfWinner = hoyRoomPlayers.First(_ => _.PlayerName == winnerOfRound.PlayerName);
+            roomPlayerOfWinner.Wins++;
+            foreach (var hoyPlayer in _hoyPlayers)
+            {
+                foreach (var card in hoyPlayer.GetBank())
+                {
+                    NetworkServer.Destroy(card.gameObject);
+                }
+                hoyPlayer.RpcShowWinner(winnerOfRound);
+            }
+
+            yield return new WaitForSeconds(3f);
+            
+            foreach (var hoyPlayer in _hoyPlayers)
+            {
+                hoyPlayer.RpcShowSeriesStat();
+            }
+            
+            
+            yield return new WaitForSeconds(3f);
+            
+            if (networkManager.LeaderPlayer.CurrentRound < networkManager.LeaderPlayer.NumOfRounds)
+            {
+                networkManager.NextRound();
+            } 
             //StartNextRound || Close Game
             IEnumerator CountPointsRoutine()
             {
@@ -237,6 +264,8 @@ namespace Hoy
                         card.RpcSetOrderInLayer(orderInLayer++);
                         yield return new WaitForSeconds(0.9f);
                     }
+
+                    player.Score = score;
                 }
             }
         }

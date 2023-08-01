@@ -123,7 +123,7 @@ namespace Hoy
 
         public override void OnRoomServerPlayersNotReady()
         {
-            LeaderPlayer.allPlayersReady = true;
+            LeaderPlayer.allPlayersReady = false;
         }
 
         public override void OnGUI()
@@ -142,6 +142,11 @@ namespace Hoy
         }
 
         public void StartGame()
+        {
+            ServerChangeScene(GameplayScene);
+        }
+
+        public void NextRound()
         {
             ServerChangeScene(GameplayScene);
         }
