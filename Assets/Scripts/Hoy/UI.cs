@@ -6,8 +6,6 @@ namespace Hoy
 {
    public class UI : MonoBehaviour
    {
-      [SerializeField] private GameObject waitPlayerPanel;
-      [SerializeField] private GameObject inGameUI;
       [SerializeField] private TextMeshProUGUI bottomPlayerNameText;
       [SerializeField] private TextMeshProUGUI topPlayerNameText;
       [SerializeField] private TextMeshProUGUI whosMoveNameText;
@@ -17,20 +15,13 @@ namespace Hoy
       [SerializeField] private TextMeshProUGUI roundWinnerNameText;
       [SerializeField] private TextMeshProUGUI roundWinnerScoreText;
       [SerializeField] private TextMeshProUGUI seriesStatText;
+      [SerializeField] private TextMeshProUGUI gameOverText;
 
       private void Awake()
       {
-         waitPlayerPanel.SetActive(true);
-         inGameUI.SetActive(false);
          whosMoveNameText.SetText("");
       }
-
-      public void DeactivateWaitPanel() => 
-         waitPlayerPanel.SetActive(false);
-
-      public void ActivateInGameUI() => 
-         inGameUI.SetActive(true);
-
+      
       public void SetLocalPlayerName(string newName)
       {
          Debug.Log("Set local player " + (newName ?? "null"));
@@ -99,6 +90,11 @@ namespace Hoy
 
          seriesStatText.gameObject.SetActive(true);
          seriesStatText.SetText(stat);
+      }
+
+      public void ShowGameOver()
+      {
+         gameOverText.gameObject.SetActive(true);
       }
    }
 }

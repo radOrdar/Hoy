@@ -63,10 +63,6 @@ namespace Hoy
             CurrentGameState = GameState.DealingCards;
             _dealZoneBounds = new Bounds(dealZone.position, dealZone.localScale);
             InitCardDeck();
-            foreach (HoyPlayer hoyPlayer in players)
-            {
-                hoyPlayer.RPCGameStarted();
-            }
 
             //Deal cards to players
             DealCardsToPlayersFromDeck();
@@ -245,8 +241,17 @@ namespace Hoy
             if (networkManager.LeaderPlayer.CurrentRound < networkManager.LeaderPlayer.NumOfRounds)
             {
                 networkManager.NextRound();
-            } 
-            //StartNextRound || Close Game
+            } else
+            {
+                foreach (var hoyPlayer in _hoyPlayers)
+                {
+                    hoyPlayer.RpcGameOver();
+                }
+            }
+
+            yield return new WaitForSeconds(5f);
+            networkManager.NextRound();
+           
             IEnumerator CountPointsRoutine()
             {
                 foreach (var player in _hoyPlayers)
@@ -262,7 +267,7 @@ namespace Hoy
                         var score1 = score;
                         card.SetTargetServer(target, () => player.RpcSetScore(score1, player.PlayerName));
                         card.RpcSetOrderInLayer(orderInLayer++);
-                        yield return new WaitForSeconds(0.9f);
+                        yield return new WaitForSeconds(card.cardDealMoveTime);
                     }
 
                     player.Score = score;

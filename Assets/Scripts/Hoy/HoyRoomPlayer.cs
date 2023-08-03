@@ -24,7 +24,7 @@ namespace Hoy
         
         [SyncVar] public bool allPlayersReady;
         [field: SyncVar] public int NumOfRounds { get; private set; } = 1;
-        [field: SyncVar] public int CurrentRound { get; private set; } = 0;
+        [field: SyncVar] public int CurrentRound { get; set; } = 0;
 
         [field: SyncVar] public string PlayerName { get; set; }
         [field: SyncVar] public int Wins { get; set; }

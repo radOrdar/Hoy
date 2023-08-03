@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using Mirror;
+using UnityEditor;
 using UnityEngine;
 
 /*
@@ -27,10 +28,10 @@ namespace Hoy
         // Overrides the base singleton so we don't
         // have to cast to this type everywhere.
         public static HoyRoomNetworkManager Singleton => (HoyRoomNetworkManager)singleton;
-         public HoyRoomPlayer LeaderPlayer { get; set; }
+        public HoyRoomPlayer LeaderPlayer { get; set; }
 
         private int _numOfGameplayers;
-        
+
 
         #region Server System Callbacks
 
@@ -39,7 +40,24 @@ namespace Hoy
             if (sceneName == RoomScene)
             {
                 _numOfGameplayers = 0;
+                if (LeaderPlayer != null && LeaderPlayer.CurrentRound > 0)
+                {
+                    if (LeaderPlayer.NumOfRounds > LeaderPlayer.CurrentRound)
+                    {
+                        StartCoroutine(StartNextRound());
+                        LeaderPlayer.CurrentRound++;
+                    } else
+                    {
+                        LeaderPlayer.CurrentRound = 0;
+                    }
+                }
             }
+        }
+
+        private IEnumerator StartNextRound()
+        {
+            yield return new WaitForSeconds(1f);
+            StartGame();
         }
 
         public override void OnServerAddPlayer(NetworkConnectionToClient conn)
@@ -51,6 +69,7 @@ namespace Hoy
             }
 
             base.OnServerAddPlayer(conn);
+            Debug.Log("server add player");
             var roomPlayer = conn.identity.GetComponent<HoyRoomPlayer>();
             if (numPlayers == 1)
             {
@@ -100,7 +119,7 @@ namespace Hoy
         public override void OnStopServer()
         {
 #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
+            EditorApplication.isPlaying = false;
 #endif
             Application.Quit();
         }
@@ -111,7 +130,7 @@ namespace Hoy
         public override void OnStopClient()
         {
 #if UNITY_EDITOR
-            UnityEditor.EditorApplication.isPlaying = false;
+            EditorApplication.isPlaying = false;
 #endif
             Application.Quit();
         }
@@ -138,7 +157,6 @@ namespace Hoy
                     ServerChangeScene(RoomScene);
                 GUILayout.EndArea();
             }
-            
         }
 
         public void StartGame()
@@ -148,7 +166,7 @@ namespace Hoy
 
         public void NextRound()
         {
-            ServerChangeScene(GameplayScene);
+            ServerChangeScene(RoomScene);
         }
     }
 }
