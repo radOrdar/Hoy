@@ -2,10 +2,11 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Hoy.Cards;
+using Hoy.Services;
 using Hoy.StaticData;
 using Mirror;
 using UnityEngine;
-using Object = System.Object;
 using Random = UnityEngine.Random;
 
 namespace Hoy
@@ -46,7 +47,7 @@ namespace Hoy
         }
 
         [Server]
-        public void StartGame(HoyPlayer[] players)
+        public IEnumerator StartGame(HoyPlayer[] players)
         {
             _hoyPlayers = players;
             _playerNodes = new ListNode<HoyPlayer>(players[0]);
@@ -62,10 +63,10 @@ namespace Hoy
             NewPlayedCardSlotPack();
             CurrentGameState = GameState.DealingCards;
             _dealZoneBounds = new Bounds(dealZone.position, dealZone.localScale);
-            InitCardDeck();
-
-            //Deal cards to players
-            DealCardsToPlayersFromDeck();
+             InitCardDeck();
+             AudioService.Instance.RpcPlayOneShotDelayed(AudioSfxType.ShuffleCards, 0);
+             yield return new WaitForSeconds(1f);
+             DealCardsToPlayersFromDeck();
         }
 
         private void DealCardsToPlayersFromDeck()
@@ -76,7 +77,7 @@ namespace Hoy
             cardPacks.Add(_cardsSpawned.GetRange(_cardsSpawned.Count - 9, 9));
             _cardsSpawned.RemoveRange(_cardsSpawned.Count - 9, 9);
             StartCoroutine(DealCardsToPlayersRoutine(_hoyPlayers, cardPacks));
-
+            
             IEnumerator DealCardsToPlayersRoutine(HoyPlayer[] players, List<List<Card>> listCards)
             {
                 for (int i = 0; i < players.Length; i++)
@@ -214,6 +215,7 @@ namespace Hoy
             }
 
             yield return StartCoroutine(CountPointsRoutine());
+            yield return new WaitForSeconds(2f);
             var winnerOfRound = _hoyPlayers.OrderByDescending(_ => _.Score).First();
             var networkManager = HoyRoomNetworkManager.Singleton;
             var hoyRoomPlayers = networkManager.roomSlots.Cast<HoyRoomPlayer>();
@@ -266,6 +268,7 @@ namespace Hoy
                         score += card.FaceType == CardFaceType.FInfinity ? 0 : card.Value;
                         var score1 = score;
                         card.SetTargetServer(target, () => player.RpcSetScore(score1, player.PlayerName));
+                        AudioService.Instance.RpcPlayOneShotDelayed(AudioSfxType.PlayTable, card.cardDealMoveTime - 0.1f);
                         card.RpcSetOrderInLayer(orderInLayer++);
                         yield return new WaitForSeconds(card.cardDealMoveTime);
                     }

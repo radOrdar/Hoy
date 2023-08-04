@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Mirror;
 using UnityEditor;
 using UnityEngine;
@@ -49,6 +50,10 @@ namespace Hoy
                     } else
                     {
                         LeaderPlayer.CurrentRound = 0;
+                        foreach (var roomPlayer in roomSlots.Cast<HoyRoomPlayer>())
+                        {
+                            roomPlayer.Wins = 0;
+                        }
                     }
                 }
             }
@@ -88,7 +93,7 @@ namespace Hoy
             yield return new WaitForSeconds(0.2f);
             var gamePlayers = FindObjectsOfType<HoyPlayer>();
             Debug.Log($"{gamePlayers.Length} gameplayers on Scene");
-            GameManager.Instance.StartGame(gamePlayers);
+            StartCoroutine(GameManager.Instance.StartGame(gamePlayers));
         }
 
 

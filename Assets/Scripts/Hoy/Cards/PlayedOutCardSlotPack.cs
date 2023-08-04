@@ -1,8 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Hoy.Services;
 using UnityEngine;
 
-namespace Hoy
+namespace Hoy.Cards
 {
     public class PlayedOutCardSlotPack
     {
@@ -39,6 +40,7 @@ namespace Hoy
             card.RpcSetOrderInLayer(_nextOrderInLayer);
             _nextOrderInLayer++;
             card.SetTargetServer(startPoint + new Vector2(_nextHorizontalOffset, Mathf.Sign(player.transform.position.y) * _verticalOffset));
+            AudioService.Instance.RpcPlayOneShotDelayed(AudioSfxType.PlayTable, card.cardDealMoveTime - 0.1f);
             _cards.Add(card);
 
             if (_cards.Count % 2 == 0)

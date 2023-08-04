@@ -2,7 +2,7 @@
 using Mirror;
 using UnityEngine;
 
-namespace Hoy
+namespace Hoy.Cards
 {
     public class DragControl : NetworkBehaviour
     {
