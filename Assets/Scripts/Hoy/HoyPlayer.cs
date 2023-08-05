@@ -13,117 +13,124 @@ using UnityEngine;
 
 namespace Hoy
 {
-	public class HoyPlayer : NetworkBehaviour
-	{
-		[SerializeField] private Vector2 _localOffsetCardPack;
-		[SerializeField] private float _horizontalOffset;
-		[field:SyncVar(hook = nameof(OnPlayerNameSet))] public string PlayerName { get; set; }
-		[field:SyncVar]public int Score { get; set; }
+    public class HoyPlayer : NetworkBehaviour
+    {
+        [SerializeField] private Vector2 _localOffsetCardPack;
+        [SerializeField] private float _horizontalOffset;
 
-		private PlayerCardSlotPack _playerCardSlotPack;
-		
-		/// <summary>
-		/// This is invoked for NetworkBehaviour objects when they become active on the server.
-		/// <para>This could be triggered by NetworkServer.Listen() for objects in the scene, or by NetworkServer.Spawn() for objects that are dynamically created.</para>
-		/// <para>This will be called for objects on a "host" as well as for object on a dedicated server.</para>
-		/// </summary>
-		public override void OnStartServer()
-		{
-			transform.rotation = Quaternion.LookRotation(Vector3.forward, -transform.position);
+        [field: SyncVar(hook = nameof(OnPlayerNameSet))]
+        public string PlayerName { get; set; }
 
-			_playerCardSlotPack = new PlayerCardSlotPack(transform.TransformPoint(_localOffsetCardPack), transform.right * _horizontalOffset, 10, connectionToClient);
-		}
+        [field: SyncVar] public int Score { get; set; }
 
-		/// <summary>
-		/// Called when the local player object has been set up.
-		/// <para>This happens after OnStartClient(), as it is triggered by an ownership message from the server. This is an appropriate place to activate components or functionality that should only be active for the local player, such as cameras and input.</para>
-		/// </summary>
-		public override void OnStartLocalPlayer()
-		{
-			GameObject.FindWithTag("MainCamera").transform.parent.rotation = Quaternion.LookRotation(-transform.position, -Vector3.forward);
-			Debug.Log("Camera is oriented");
-		}
+        private PlayerCardSlotPack _playerCardSlotPack;
 
-		private void OnPlayerNameSet(string oldName, string newName)
-		{
-			if (isLocalPlayer)
-			{
-				FindObjectOfType<UI>().SetLocalPlayerName(newName);
-			} else
-			{
-				FindObjectOfType<UI>().SetFoePlayerName(newName);
-			}
-		}
+        /// <summary>
+        /// This is invoked for NetworkBehaviour objects when they become active on the server.
+        /// <para>This could be triggered by NetworkServer.Listen() for objects in the scene, or by NetworkServer.Spawn() for objects that are dynamically created.</para>
+        /// <para>This will be called for objects on a "host" as well as for object on a dedicated server.</para>
+        /// </summary>
+        public override void OnStartServer()
+        {
+            transform.rotation = Quaternion.LookRotation(Vector3.forward, -transform.position);
 
-		[ClientRpc]
-		public void RPCSetGameOverUI()
-		{
-			var ui = FindObjectOfType<UI>();
-			ui.DeactivateWhosMoveNameText();
-			ui.ActivateScores();
-		}
+            _playerCardSlotPack = new PlayerCardSlotPack(transform.TransformPoint(_localOffsetCardPack), transform.right * _horizontalOffset, 10, connectionToClient);
+        }
 
-		[Server]
-		public void TakeCard(Card card)
-		{
-			_playerCardSlotPack.AddCard(card);
-		}
+        /// <summary>
+        /// Called when the local player object has been set up.
+        /// <para>This happens after OnStartClient(), as it is triggered by an ownership message from the server. This is an appropriate place to activate components or functionality that should only be active for the local player, such as cameras and input.</para>
+        /// </summary>
+        public override void OnStartLocalPlayer()
+        { }
 
-		[Server]
-		public void AddToBank(Card card)
-		{
-			_playerCardSlotPack.AddToBank(card);
-		}
+        private void OnPlayerNameSet(string oldName, string newName)
+        {
+            if (isLocalPlayer)
+            {
+                FindObjectOfType<UI>().SetLocalPlayerName(newName);
+            } else
+            {
+                FindObjectOfType<UI>().SetFoePlayerName(newName);
+            }
+        }
 
-		[Command]
-		public void CmdOnStartDrag(Card card)
-		{
-			_playerCardSlotPack.DeleteCard(card);
-		}
+        [ClientRpc]
+        public void RPCSetGameOverUI()
+        {
+            var ui = FindObjectOfType<UI>();
+            ui.DeactivateWhosMoveNameText();
+            ui.ActivateScores();
+        }
 
-		[Server]
-		public bool IsEmpty()
-		{
-			return _playerCardSlotPack.IsEmpty();
-		}
+        [Server]
+        public void TakeCard(Card card)
+        {
+            _playerCardSlotPack.AddCard(card);
+        }
 
-		public List<Card> GetBank() => 
-			_playerCardSlotPack.GetBank();
+        [Server]
+        public void AddToBank(Card card)
+        {
+            _playerCardSlotPack.AddToBank(card);
+        }
 
-		[ClientRpc]
-		public void RpcSetScore(int score, string playerName)
-		{
-			var ui = FindObjectOfType<UI>();
-			if (NetworkClient.localPlayer.GetComponent<HoyPlayer>().PlayerName == playerName)
-			{
-				ui.SetPlayerScore(score);
-			} else
-			{
-				ui.SetFoeScore(score);
-			}
-		}
+        [Command]
+        public void CmdOnStartDrag(Card card)
+        {
+            _playerCardSlotPack.DeleteCard(card);
+        }
 
-		[ClientRpc]
-		public void RpcShowWinner(HoyPlayer winnerOfRound)
-		{
-			var ui = FindObjectOfType<UI>();
-			ui.DeactivatePlayerNames();
-			ui.DeactivateScoreTexts();
-			ui.ShowWinner(winnerOfRound.PlayerName, winnerOfRound.Score);
-		}
+        [Server]
+        public bool IsEmpty()
+        {
+            return _playerCardSlotPack.IsEmpty();
+        }
 
-		[ClientRpc]
-		public void RpcShowSeriesStat()
-		{
-			var ui = FindObjectOfType<UI>();
-			ui.ShowSeriesStat(HoyRoomNetworkManager.Singleton.roomSlots.Cast<HoyRoomPlayer>().ToArray());
-		}
+        public List<Card> GetBank() =>
+            _playerCardSlotPack.GetBank();
 
-		[ClientRpc]
-		public void RpcGameOver()
-		{
-			var ui = FindObjectOfType<UI>();
-			ui.ShowGameOver();
-		}
-	}
+        [ClientRpc]
+        public void RpcSetScore(int score, string playerName)
+        {
+            var ui = FindObjectOfType<UI>();
+            if (NetworkClient.localPlayer.GetComponent<HoyPlayer>().PlayerName == playerName)
+            {
+                ui.SetPlayerScore(score);
+            } else
+            {
+                ui.SetFoeScore(score);
+            }
+        }
+
+        [ClientRpc]
+        public void RpcShowWinner(HoyPlayer winnerOfRound)
+        {
+            var ui = FindObjectOfType<UI>();
+            ui.DeactivatePlayerNames();
+            ui.DeactivateScoreTexts();
+            ui.ShowWinner(winnerOfRound.PlayerName, winnerOfRound.Score);
+        }
+
+        [ClientRpc]
+        public void RpcShowSeriesStat()
+        {
+            var ui = FindObjectOfType<UI>();
+            ui.ShowSeriesStat(HoyRoomNetworkManager.Singleton.roomSlots.Cast<HoyRoomPlayer>().ToArray());
+        }
+
+        [ClientRpc]
+        public void RpcGameOver()
+        {
+            var ui = FindObjectOfType<UI>();
+            ui.ShowGameOver();
+        }
+
+        [TargetRpc]
+        public void TargetGameStarted()
+        {
+            FindObjectOfType<CameraParent>().transform.rotation =
+                Quaternion.LookRotation(-transform.position, -Vector3.forward);
+        }
+    }
 }

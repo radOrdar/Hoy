@@ -50,6 +50,10 @@ namespace Hoy
         public IEnumerator StartGame(HoyPlayer[] players)
         {
             _hoyPlayers = players;
+            foreach (var player in _hoyPlayers)
+            {
+                player.TargetGameStarted();
+            }
             _playerNodes = new ListNode<HoyPlayer>(players[0]);
             var playerNodesTemp = _playerNodes;
             for (int i = 1; i < players.Length; i++)

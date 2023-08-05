@@ -12,10 +12,12 @@ namespace Hoy.Cards
         private Transform cachedTransform;
         private bool yourTurn;
         private bool isDragging;
+        private Plane _plane;
         
         public override void OnStartClient()
         {
             mainCamera = Camera.main;
+            _plane = new Plane(-Vector3.forward, -1); 
         }
 
         public override void OnStartServer()
@@ -42,9 +44,11 @@ namespace Hoy.Cards
                 isDragging = true;
                 OnStartDrag();
             }
-            Vector3 mousePos = mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            Ray ray = mainCamera.ScreenPointToRay(Input.mousePosition);
 
-            CmdMoveCard(mousePos.x, mousePos.y);
+            _plane.Raycast(ray, out float enter);
+            var hitPoint = ray.GetPoint(enter);
+            CmdMoveCard(hitPoint.x, hitPoint.y);
         }
 
         [Command]

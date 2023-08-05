@@ -318,10 +318,17 @@ MonoBehaviour:
   minPlayers: 2
   roomPlayerPrefab: {fileID: 1429742614136679687, guid: 82736ed095eab324699efc4c6a83430d, type: 3}
   RoomScene: Assets/Scenes/Room.unity
-  GameplayScene: Assets/Scenes/GamePlay.unity
+  GameplayScene: Assets/Scenes/Online.unity
   _allPlayersReady: 0
   roomSlots: []
   clientIndex: 0
+  gameplayScenes:
+    m_Keys: 02000000
+    m_Values:
+    - _sceneOB: {fileID: 102900000, guid: 8c9cfa26abfee488c85f1582747f6a02, type: 3}
+      _name: GamePlay2Players
+      _path: Assets/Scenes/GamePlay2Players.unity
+      _buildIndex: 3
 --- !u!4 &466381491
 Transform:
   m_ObjectHideFlags: 0

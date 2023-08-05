@@ -1,7 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Hoy.Helpers;
 using Mirror;
+using Udar.SceneManager;
 using UnityEditor;
 using UnityEngine;
 
@@ -24,8 +26,9 @@ namespace Hoy
     /// </summary>
     public class HoyRoomNetworkManager : NetworkRoomManager
     {
-        private List<string> namesList = new() { "Snow", "Serenity", "Nuzzle", "Climax", "Saki", "Eve", "Zlatan", "Remy" };
+        [SerializeField] private SerializableDictionary<int, SceneField> gameplayScenes;
 
+        private List<string> namesList = new() { "Snow", "Serenity", "Nuzzle", "Climax", "Saki", "Eve", "Zlatan", "Remy" };
         // Overrides the base singleton so we don't
         // have to cast to this type everywhere.
         public static HoyRoomNetworkManager Singleton => (HoyRoomNetworkManager)singleton;
@@ -82,9 +85,9 @@ namespace Hoy
                 LeaderPlayer = roomPlayer;
             }
 
-            name = namesList[Random.Range(0, namesList.Count)];
-            roomPlayer.PlayerName = name;
-            namesList.Remove(name);
+            string nameToChose = namesList[Random.Range(0, namesList.Count)];
+            roomPlayer.PlayerName = nameToChose;
+            namesList.Remove(nameToChose);
         }
 
         [Server]
@@ -99,7 +102,7 @@ namespace Hoy
 
         public override bool OnRoomServerSceneLoadedForPlayer(NetworkConnectionToClient conn, GameObject roomPlayer, GameObject gamePlayer)
         {
-            if (Utils.IsSceneActive(GameplayScene))
+            if (gameplayScenes.Values.Any(_ => Utils.IsSceneActive(_.Name)))
             {
                 StartCoroutine(AssignNameToGamePlayerRoutine(roomPlayer, gamePlayer));
                 _numOfGameplayers++;
@@ -155,7 +158,7 @@ namespace Hoy
             if (!showRoomGUI)
                 return;
 
-            if (NetworkServer.active && Utils.IsSceneActive(GameplayScene))
+            if (NetworkServer.active && gameplayScenes.Values.Any(_ => Utils.IsSceneActive(_.Name)))
             {
                 GUILayout.BeginArea(new Rect(Screen.width - 150f, 10f, 140f, 30f));
                 if (GUILayout.Button("Return to Room"))
@@ -166,7 +169,7 @@ namespace Hoy
 
         public void StartGame()
         {
-            ServerChangeScene(GameplayScene);
+            ServerChangeScene(gameplayScenes[numPlayers].Name);
         }
 
         public void NextRound()
