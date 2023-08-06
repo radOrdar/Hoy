@@ -39,7 +39,7 @@ namespace Hoy.Cards
         [Command]
         public void CmdOnEndDrag()
         {
-            GameManager.Instance.DragEnded(this);
+            BaseGameManager.Instance.DragEnded(this);
         }
 
         [Server]

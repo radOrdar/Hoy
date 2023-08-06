@@ -96,7 +96,7 @@ namespace Hoy
             yield return new WaitForSeconds(0.2f);
             var gamePlayers = FindObjectsOfType<HoyPlayer>();
             Debug.Log($"{gamePlayers.Length} gameplayers on Scene");
-            StartCoroutine(GameManager.Instance.StartGame(gamePlayers));
+            StartCoroutine(BaseGameManager.Instance.StartGame(gamePlayers));
         }
 
 

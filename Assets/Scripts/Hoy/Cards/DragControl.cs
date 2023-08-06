@@ -60,7 +60,7 @@ namespace Hoy.Cards
         [ClientCallback]
         private void OnMouseDown()
         {
-            yourTurn = GameManager.Instance.CurrentGameState == GameState.PlayerTurn && GameManager.Instance.WhosNextMove.PlayerName == NetworkClient.localPlayer.GetComponent<HoyPlayer>().PlayerName;
+            yourTurn = BaseGameManager.Instance.CurrentGameState == GameState.PlayerTurn && BaseGameManager.Instance.WhosNextMove.PlayerName == NetworkClient.localPlayer.GetComponent<HoyPlayer>().PlayerName;
         }
     }
 }

@@ -18,7 +18,7 @@ namespace Hoy
         [SerializeField] private Vector2 _localOffsetCardPack;
         [SerializeField] private float _horizontalOffset;
 
-        [field: SyncVar(hook = nameof(OnPlayerNameSet))]
+        [field: SyncVar /*(hook = nameof(OnPlayerNameSet))*/]
         public string PlayerName { get; set; }
 
         [field: SyncVar] public int Score { get; set; }
@@ -34,7 +34,18 @@ namespace Hoy
         {
             transform.rotation = Quaternion.LookRotation(Vector3.forward, -transform.position);
 
-            _playerCardSlotPack = new PlayerCardSlotPack(transform.TransformPoint(_localOffsetCardPack), transform.right * _horizontalOffset, 10, connectionToClient);
+            int numPlayers = HoyRoomNetworkManager.Singleton.numPlayers;
+            float coeff;
+            if (numPlayers == 2)
+            {
+                coeff = 4.5f;
+            } else
+            {
+                coeff = 18f / numPlayers;
+            }
+
+            Vector2 initialPoint = new Vector2(-coeff * _horizontalOffset + _horizontalOffset / 2, 0);
+            _playerCardSlotPack = new PlayerCardSlotPack(transform.up, transform.TransformPoint(initialPoint), transform.right * _horizontalOffset, 10, connectionToClient);
         }
 
         /// <summary>
@@ -44,16 +55,16 @@ namespace Hoy
         public override void OnStartLocalPlayer()
         { }
 
-        private void OnPlayerNameSet(string oldName, string newName)
-        {
-            if (isLocalPlayer)
-            {
-                FindObjectOfType<UI>().SetLocalPlayerName(newName);
-            } else
-            {
-                FindObjectOfType<UI>().SetFoePlayerName(newName);
-            }
-        }
+        // private void OnPlayerNameSet(string oldName, string newName)
+        // {
+        //     if (isLocalPlayer)
+        //     {
+        //         FindObjectOfType<UI>().SetLocalPlayerName(newName);
+        //     } else
+        //     {
+        //         FindObjectOfType<UI>().SetFoePlayerName(newName);
+        //     }
+        // }
 
         [ClientRpc]
         public void RPCSetGameOverUI()

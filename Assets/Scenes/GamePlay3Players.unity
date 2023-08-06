@@ -160,7 +160,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 12835326}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -29.9, y: 19.6, z: 0}
+  m_LocalPosition: {x: -16.99, y: 9.97, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -667,14 +667,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 471603208}
-  m_LocalRotation: {x: 0.53729963, y: 0, z: 0, w: 0.8433915}
-  m_LocalPosition: {x: 0, y: 0, z: -20}
+  m_LocalRotation: {x: 0.5299192, y: 0, z: 0, w: 0.8480481}
+  m_LocalPosition: {x: 0, y: 0, z: -24.6}
   m_LocalScale: {x: 1, y: 0.99999976, z: 0.99999976}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1698552212}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 65, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 64, y: 0, z: 0}
 --- !u!114 &471603210
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -741,7 +741,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 55
+  field of view: 47
   orthographic: 0
   orthographic size: 30
   m_Depth: 0
@@ -901,7 +901,7 @@ SpriteRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 666401910}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 0
   m_ReceiveShadows: 0
   m_DynamicOccludee: 1
@@ -1331,7 +1331,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 955294020}
-  - component: {fileID: 955294019}
+  - component: {fileID: 955294022}
   - component: {fileID: 955294021}
   m_Layer: 0
   m_Name: GameManager
@@ -1340,38 +1340,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &955294019
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 955294018}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5a7746f3cfeb9a49b0047d0ec6d844f, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  syncDirection: 0
-  syncMode: 0
-  syncInterval: 0
-  dealZone: {fileID: 666401912}
-  cardDeckSpawnTrans: {fileID: 1401608120}
-  cardStaticDatas:
-  - {fileID: 11400000, guid: 1a5af6af9c0177747a436981db5947f7, type: 2}
-  - {fileID: 11400000, guid: d9a6cdcda2026a7419be481badcbbff8, type: 2}
-  - {fileID: 11400000, guid: 733059681a77c5144aec06509e718a09, type: 2}
-  - {fileID: 11400000, guid: a9ca2bd0838ab7d4ab828d0f808430e7, type: 2}
-  - {fileID: 11400000, guid: 112bc1a6252e15244999263e4d0ad318, type: 2}
-  - {fileID: 11400000, guid: 1e8e749add0138942b8efbd7afce1cd5, type: 2}
-  - {fileID: 11400000, guid: 35ddfccd3242a814e9751b8e35cbd968, type: 2}
-  - {fileID: 11400000, guid: a1daa25f6e62aba499281d7376155583, type: 2}
-  - {fileID: 11400000, guid: 5a1cb9a1d52be534db5c19e4e1222156, type: 2}
-  - {fileID: 11400000, guid: 9a75b1012c597bd42a05a9c94e0c10f9, type: 2}
-  - {fileID: 11400000, guid: 272e5f8dea9c52845a4aa8b29479e6da, type: 2}
-  - {fileID: 11400000, guid: 0d5b49ff0b47eaf4591e3037fd0f78e3, type: 2}
-  - {fileID: 11400000, guid: 1ae77c3ff54f37d44ba39d7f617f996c, type: 2}
-  cardPf: {fileID: -5285939226424223818, guid: 1700ab6618173db4e87a80b963a794ad, type: 3}
 --- !u!4 &955294020
 Transform:
   m_ObjectHideFlags: 0
@@ -1396,10 +1364,42 @@ MonoBehaviour:
   m_GameObject: {fileID: 955294018}
   m_Enabled: 1
   m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46c14d0183cc40b3af4f6e872ab27cec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  syncDirection: 0
+  syncMode: 0
+  syncInterval: 0
+  dealZone: {fileID: 666401912}
+  cardDeckSpawnTrans: {fileID: 1401608120}
+  cardStaticDatas:
+  - {fileID: 11400000, guid: 1a5af6af9c0177747a436981db5947f7, type: 2}
+  - {fileID: 11400000, guid: d9a6cdcda2026a7419be481badcbbff8, type: 2}
+  - {fileID: 11400000, guid: 733059681a77c5144aec06509e718a09, type: 2}
+  - {fileID: 11400000, guid: a9ca2bd0838ab7d4ab828d0f808430e7, type: 2}
+  - {fileID: 11400000, guid: 112bc1a6252e15244999263e4d0ad318, type: 2}
+  - {fileID: 11400000, guid: 1e8e749add0138942b8efbd7afce1cd5, type: 2}
+  - {fileID: 11400000, guid: 35ddfccd3242a814e9751b8e35cbd968, type: 2}
+  - {fileID: 11400000, guid: a1daa25f6e62aba499281d7376155583, type: 2}
+  - {fileID: 11400000, guid: 5a1cb9a1d52be534db5c19e4e1222156, type: 2}
+  - {fileID: 11400000, guid: 9a75b1012c597bd42a05a9c94e0c10f9, type: 2}
+  - {fileID: 11400000, guid: 272e5f8dea9c52845a4aa8b29479e6da, type: 2}
+  - {fileID: 11400000, guid: 0d5b49ff0b47eaf4591e3037fd0f78e3, type: 2}
+  - {fileID: 11400000, guid: 1ae77c3ff54f37d44ba39d7f617f996c, type: 2}
+  cardPf: {fileID: -5285939226424223818, guid: 1700ab6618173db4e87a80b963a794ad, type: 3}
+--- !u!114 &955294022
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 955294018}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneId: 214737157
+  sceneId: 1972573838
   _assetId: 0
   serverOnly: 0
   visible: 0
@@ -1429,7 +1429,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 967380563}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 41.8, y: 23, z: 0}
+  m_LocalPosition: {x: 16.56, y: 9.65, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -2652,7 +2652,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1530519158
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3059,7 +3059,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1675315251
 RectTransform:
   m_ObjectHideFlags: 0
@@ -3793,7 +3793,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dc3f7328f9414632a471c6ed2311f0ee, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetFPS: 60
+  targetFPS: 45
 --- !u!4 &2007200532
 Transform:
   m_ObjectHideFlags: 0

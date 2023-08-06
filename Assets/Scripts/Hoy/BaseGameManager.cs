@@ -11,9 +11,9 @@ using Random = UnityEngine.Random;
 
 namespace Hoy
 {
-    public class GameManager : NetworkBehaviour
+    public abstract class BaseGameManager : NetworkBehaviour
     {
-        public static GameManager Instance { get; private set; }
+        public static BaseGameManager Instance { get; private set; }
 
         [SerializeField] private Transform dealZone;
         [SerializeField] private Transform cardDeckSpawnTrans;
@@ -23,7 +23,7 @@ namespace Hoy
         private HoyPlayer[] _hoyPlayers;
         private ListNode<HoyPlayer> _playerNodes;
 
-        private List<Card> _cardsSpawned = new();
+        protected List<Card> _cardsSpawned = new();
 
         [field: SyncVar]
         public GameState CurrentGameState { get; set; }
@@ -75,13 +75,8 @@ namespace Hoy
 
         private void DealCardsToPlayersFromDeck()
         {
-            List<List<Card>> cardPacks = new List<List<Card>>();
-            cardPacks.Add(_cardsSpawned.GetRange(_cardsSpawned.Count - 9, 9));
-            _cardsSpawned.RemoveRange(_cardsSpawned.Count - 9, 9);
-            cardPacks.Add(_cardsSpawned.GetRange(_cardsSpawned.Count - 9, 9));
-            _cardsSpawned.RemoveRange(_cardsSpawned.Count - 9, 9);
-            StartCoroutine(DealCardsToPlayersRoutine(_hoyPlayers, cardPacks));
-            
+            StartCoroutine(DealCardsToPlayersRoutine(_hoyPlayers, GetCardsPackToDeal()));
+
             IEnumerator DealCardsToPlayersRoutine(HoyPlayer[] players, List<List<Card>> listCards)
             {
                 for (int i = 0; i < players.Length; i++)
@@ -93,6 +88,8 @@ namespace Hoy
                 WhosNextMove = _playerNodes.Value;
             }
         }
+
+        protected abstract List<List<Card>> GetCardsPackToDeal(); 
 
         [Server]
         private void NewPlayedCardSlotPack()
