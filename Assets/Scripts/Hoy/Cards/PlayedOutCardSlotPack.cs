@@ -7,24 +7,19 @@ namespace Hoy.Cards
 {
     public class PlayedOutCardSlotPack
     {
-        private Vector2 startPoint;
-        private int _orderInLayer;
-        private float _horizontalOffset;
-        private float _verticalOffset;
+        private readonly float _horizontalOffset;
 
-        private List<Card> _cards = new();
+        private readonly List<Card> _cards = new();
+        private readonly Dictionary<HoyPlayer, List<Card>> _playersCardPacks = new();
         private int _nextOrderInLayer;
         private float _nextHorizontalOffset;
-        
+
         public HoyPlayer Winner { get; private set; }
 
-        public PlayedOutCardSlotPack(Vector2 startPoint, int orderInLayer, float horizontalOffset, float verticalOffset)
+        public PlayedOutCardSlotPack(int orderInLayer, float horizontalOffset)
         {
-            this.startPoint = startPoint;
-            _orderInLayer = orderInLayer;
             _horizontalOffset = horizontalOffset;
-            _verticalOffset = verticalOffset;
-            _nextOrderInLayer = _orderInLayer;
+            _nextOrderInLayer = orderInLayer;
         }
 
         public int Count => _cards.Count;
@@ -37,16 +32,27 @@ namespace Hoy.Cards
                 Winner = player;
             }
 
-            card.RpcSetOrderInLayer(_nextOrderInLayer);
-            _nextOrderInLayer++;
-            card.SetTargetServer(startPoint + new Vector2(_nextHorizontalOffset, Mathf.Sign(player.transform.position.y) * _verticalOffset));
-            AudioService.Instance.RpcPlayOneShotDelayed(AudioSfxType.PlayTable, card.cardDealMoveTime - 0.1f);
             _cards.Add(card);
 
-            if (_cards.Count % 2 == 0)
+            card.RpcSetOrderInLayer(_nextOrderInLayer);
+            _nextOrderInLayer++;
+
+            if (!_playersCardPacks.ContainsKey(player))
             {
-                _nextHorizontalOffset += _horizontalOffset;
+                _playersCardPacks[player] = new List<Card>();
             }
+            var playerPack = _playersCardPacks[player];
+            playerPack.Add(card);
+            float dealZoneRadius = BaseGameManager.Instance.DealZone.localScale.x / 2;
+            Vector3 initPoint = player.transform.position.normalized * dealZoneRadius;
+            Vector3 localLeftDir = player.transform.TransformDirection(Vector3.left);
+            Vector3 startPoint = initPoint + localLeftDir * _horizontalOffset * (playerPack.Count / 2f - 0.5f);
+            for (int i = 0; i < playerPack.Count; i++)
+            {
+                playerPack[i].SetTargetServer(startPoint - localLeftDir * _horizontalOffset * i);
+            }
+
+            AudioService.Instance.RpcPlayOneShotDelayed(AudioSfxType.PlayTable, card.cardDealMoveTime - 0.1f);
         }
 
         public List<Card> GetCards()

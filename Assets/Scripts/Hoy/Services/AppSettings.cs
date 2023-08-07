@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Hoy
+namespace Hoy.Services
 {
     public class AppSettings : MonoBehaviour
     {

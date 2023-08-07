@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Hoy.Cards;
+using Hoy.Helpers;
 using Mirror;
 using UnityEngine;
 
@@ -15,7 +16,6 @@ namespace Hoy
 {
     public class HoyPlayer : NetworkBehaviour
     {
-        [SerializeField] private Vector2 _localOffsetCardPack;
         [SerializeField] private float _horizontalOffset;
 
         [field: SyncVar /*(hook = nameof(OnPlayerNameSet))*/]

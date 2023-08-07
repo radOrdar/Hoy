@@ -1,4 +1,4 @@
-﻿namespace Hoy
+﻿namespace Hoy.Helpers
 {
     public class ListNode<T>
     {

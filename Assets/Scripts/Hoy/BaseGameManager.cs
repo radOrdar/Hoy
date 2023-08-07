@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Hoy.Cards;
+using Hoy.Helpers;
 using Hoy.Services;
 using Hoy.StaticData;
 using Mirror;
@@ -15,7 +16,7 @@ namespace Hoy
     {
         public static BaseGameManager Instance { get; private set; }
 
-        [SerializeField] private Transform dealZone;
+        [field: SerializeField] public Transform DealZone { get; private set; }
         [SerializeField] private Transform cardDeckSpawnTrans;
         [SerializeField] private CardStaticData[] cardStaticDatas;
         [SerializeField] private Card cardPf;
@@ -30,8 +31,7 @@ namespace Hoy
 
         [field: SyncVar(hook = nameof(OnWhosNextMoveChanged))]
         public HoyPlayer WhosNextMove { get; set; }
-
-        private Bounds _dealZoneBounds;
+        
         private PlayedOutCardSlotPack _playedOutCardSlotPack;
 
 
@@ -66,8 +66,7 @@ namespace Hoy
 
             NewPlayedCardSlotPack();
             CurrentGameState = GameState.DealingCards;
-            _dealZoneBounds = new Bounds(dealZone.position, dealZone.localScale);
-             InitCardDeck();
+            InitCardDeck();
              AudioService.Instance.RpcPlayOneShotDelayed(AudioSfxType.ShuffleCards, 0);
              yield return new WaitForSeconds(1f);
              DealCardsToPlayersFromDeck();
@@ -94,7 +93,7 @@ namespace Hoy
         [Server]
         private void NewPlayedCardSlotPack()
         {
-            _playedOutCardSlotPack = new PlayedOutCardSlotPack(new Vector2(-7.9f, 1f), 0, 4.5f, 3f);
+            _playedOutCardSlotPack = new PlayedOutCardSlotPack(0, 4.5f);
         }
 
         [Server]
@@ -147,7 +146,9 @@ namespace Hoy
         public void DragEnded(Card card)
         {
             HoyPlayer player = card.connectionToClient.owned.First(_ => _.GetComponent<HoyPlayer>() != null).GetComponent<HoyPlayer>();
-            if (!_dealZoneBounds.Contains(card.transform.position))
+            var dealZoneRadius = DealZone.transform.localScale.x/2;
+            var cardToDealZone = DealZone.transform.position - card.transform.position;
+            if (cardToDealZone.sqrMagnitude > dealZoneRadius * dealZoneRadius)
             {
                 player.TakeCard(card);
                 card.netIdentity.RemoveClientAuthority();
