@@ -104,7 +104,7 @@ namespace Hoy
         {
             if (gameplayScenes.Values.Any(_ => Utils.IsSceneActive(_.Name)))
             {
-                StartCoroutine(AssignNameToGamePlayerRoutine(roomPlayer, gamePlayer));
+                StartCoroutine(SetupGamePlayerRoutine(roomPlayer, gamePlayer));
                 _numOfGameplayers++;
                 if (_numOfGameplayers == numPlayers)
                     StartCoroutine(StartGameRoutine());
@@ -113,10 +113,14 @@ namespace Hoy
             return base.OnRoomServerSceneLoadedForPlayer(conn, roomPlayer, gamePlayer);
         }
 
-        private IEnumerator AssignNameToGamePlayerRoutine(GameObject roomPlayer, GameObject gamePlayer)
+        private IEnumerator SetupGamePlayerRoutine(GameObject roomPlayer, GameObject gamePlayer)
         {
-            yield return new WaitForSeconds(.1f);
-            gamePlayer.GetComponent<HoyPlayer>().PlayerName = roomPlayer.GetComponent<HoyRoomPlayer>().PlayerName;
+            int prevPosIndex = startPositionIndex == 0 ? startPositions.Count - 1 : startPositionIndex - 1;
+            yield return new WaitForSeconds(.2f);
+            HoyPlayer hoyPlayer = gamePlayer.GetComponent<HoyPlayer>();
+            hoyPlayer.PlayerName = roomPlayer.GetComponent<HoyRoomPlayer>().PlayerName;
+            Debug.Log($"SETUP GAME PLAYER {hoyPlayer.PlayerName}");
+            startPositions[prevPosIndex].GetComponent<StartPos>().RpcSetText(hoyPlayer.PlayerName);
         }
 
         #endregion

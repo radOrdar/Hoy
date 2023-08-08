@@ -44,7 +44,7 @@ namespace Hoy.Cards
             var playerPack = _playersCardPacks[player];
             playerPack.Add(card);
             float dealZoneRadius = BaseGameManager.Instance.DealZone.localScale.x / 2;
-            Vector3 initPoint = player.transform.position.normalized * dealZoneRadius;
+            Vector3 initPoint = player.transform.position.normalized * (dealZoneRadius * .7f);
             Vector3 localLeftDir = player.transform.TransformDirection(Vector3.left);
             Vector3 startPoint = initPoint + localLeftDir * _horizontalOffset * (playerPack.Count / 2f - 0.5f);
             for (int i = 0; i < playerPack.Count; i++)

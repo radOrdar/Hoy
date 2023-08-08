@@ -21,15 +21,6 @@ namespace Hoy
       {
          whosMoveNameText.SetText("");
       }
-      
-      public void SetLocalPlayerName(string newName)
-      {
-         Debug.Log("Set local player " + (newName ?? "null"));
-         bottomPlayerNameText.text = newName;
-      }
-
-      public void SetFoePlayerName(string newName) =>
-         topPlayerNameText.SetText(newName);
 
       public void SetMoveNextName(string name) =>
          whosMoveNameText.SetText(name != null ? $"{name} next move" : "");

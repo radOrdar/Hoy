@@ -18,9 +18,8 @@ namespace Hoy
     {
         [SerializeField] private float _horizontalOffset;
 
-        [field: SyncVar /*(hook = nameof(OnPlayerNameSet))*/]
+        [field: SyncVar]
         public string PlayerName { get; set; }
-
         [field: SyncVar] public int Score { get; set; }
 
         private PlayerCardSlotPack _playerCardSlotPack;
@@ -35,36 +34,11 @@ namespace Hoy
             transform.rotation = Quaternion.LookRotation(Vector3.forward, -transform.position);
 
             int numPlayers = HoyRoomNetworkManager.Singleton.numPlayers;
-            float coeff;
-            if (numPlayers == 2)
-            {
-                coeff = 4.5f;
-            } else
-            {
-                coeff = 18f / numPlayers;
-            }
+            float coeff = numPlayers == 2 ? 4.5f : 18f / numPlayers;
 
             Vector2 initialPoint = new Vector2(-coeff * _horizontalOffset + _horizontalOffset / 2, 0);
             _playerCardSlotPack = new PlayerCardSlotPack(transform.up, transform.TransformPoint(initialPoint), transform.right * _horizontalOffset, 10, connectionToClient);
         }
-
-        /// <summary>
-        /// Called when the local player object has been set up.
-        /// <para>This happens after OnStartClient(), as it is triggered by an ownership message from the server. This is an appropriate place to activate components or functionality that should only be active for the local player, such as cameras and input.</para>
-        /// </summary>
-        public override void OnStartLocalPlayer()
-        { }
-
-        // private void OnPlayerNameSet(string oldName, string newName)
-        // {
-        //     if (isLocalPlayer)
-        //     {
-        //         FindObjectOfType<UI>().SetLocalPlayerName(newName);
-        //     } else
-        //     {
-        //         FindObjectOfType<UI>().SetFoePlayerName(newName);
-        //     }
-        // }
 
         [ClientRpc]
         public void RPCSetGameOverUI()
