@@ -13,10 +13,10 @@ namespace Hoy.Cards
         private readonly int _orderInLayer;
         private readonly NetworkConnectionToClient _connectionToClient;
 
-        private readonly List<Card> _bank = new();
+        public readonly List<Card> Bank = new();
         private int _bankOrderInLayer;
 
-        private readonly List<Card> _cards = new();
+        public readonly List<Card> Cards = new();
         private int _nextOrderInLayer;
 
         public PlayerCardSlotPack(Vector3 upDirection, Vector2 initialPoint, Vector2 horizontalOffset, int orderInLayer, NetworkConnectionToClient connectionToClient)
@@ -36,20 +36,20 @@ namespace Hoy.Cards
             card.transform.up = _upDirection;
             var fluctuation = card.transform.TransformDirection(new Vector2(Random.Range(-.04f, .04f),0));
             card.transform.up = _upDirection + fluctuation;
-            card.SetTargetServer(_initialPoint + _horizontalOffset * _cards.Count, () => card.netIdentity.AssignClientAuthority(_connectionToClient));
+            card.SetTargetServer(_initialPoint + _horizontalOffset * Cards.Count, () => card.netIdentity.AssignClientAuthority(_connectionToClient));
             AudioService.Instance.RpcPlayOneShotDelayed(AudioSfxType.DealPlayer, card.cardDealMoveTime - 0.1f);
-            _cards.Add(card);
+            Cards.Add(card);
         }
 
         public void DeleteCard(Card card)
         {
-            _cards.Remove(card);
+            Cards.Remove(card);
             _nextOrderInLayer = _orderInLayer;
 
-            for (int i = 0; i < _cards.Count; i++)
+            for (int i = 0; i < Cards.Count; i++)
             {
-                _cards[i].RpcSetOrderInLayer(_nextOrderInLayer++);
-                _cards[i].SetTargetServer(_initialPoint + _horizontalOffset * i);
+                Cards[i].RpcSetOrderInLayer(_nextOrderInLayer++);
+                Cards[i].SetTargetServer(_initialPoint + _horizontalOffset * i);
             }
         }
 
@@ -61,12 +61,20 @@ namespace Hoy.Cards
             card.RpcSetOrderInLayer(_bankOrderInLayer++);
             card.SetTargetServer(_initialPoint - _horizontalOffset.normalized * 6);
             AudioService.Instance.RpcPlayOneShotDelayed(AudioSfxType.TakeBank, card.cardDealMoveTime - 0.1f);
-            _bank.Add(card);
+            Bank.Add(card);
         }
 
-        public bool IsEmpty() => _cards.Count == 0;
+        public bool IsEmpty() => Cards.Count == 0;
 
-        public List<Card> GetBank() => 
-            _bank;
+        // public List<Card> GetBank() => 
+        //     Bank;
+        public void Clear()
+        {
+            foreach (var card in Cards)
+            {
+                card.netIdentity.RemoveClientAuthority();
+            }
+            Cards.Clear();
+        }
     }
 }

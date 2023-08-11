@@ -21,8 +21,8 @@ namespace Hoy
         [SerializeField] private CardStaticData[] cardStaticDatas;
         [SerializeField] private Card cardPf;
 
-        private HoyPlayer[] _hoyPlayers;
-        private ListNode<HoyPlayer> _playerNodes;
+        protected HoyPlayer[] _hoyPlayers;
+        protected ListNode<HoyPlayer> _playerNodes;
 
         protected List<Card> _cardsSpawned = new();
 
@@ -30,9 +30,9 @@ namespace Hoy
         public GameState CurrentGameState { get; set; }
 
         [field: SyncVar(hook = nameof(OnWhosNextMoveChanged))]
-        public HoyPlayer WhosNextMove { get; set; }
-        
-        private PlayedOutCardSlotPack _playedOutCardSlotPack;
+        public HoyPlayer WhosNextMove { get; protected set; }
+
+        protected PlayedOutCardSlotPack _playedOutCardSlotPack;
 
 
         private void Awake()
@@ -54,6 +54,7 @@ namespace Hoy
             {
                 player.TargetGameStarted();
             }
+
             _playerNodes = new ListNode<HoyPlayer>(players[0]);
             var playerNodesTemp = _playerNodes;
             for (int i = 1; i < players.Length; i++)
@@ -63,18 +64,23 @@ namespace Hoy
             }
 
             playerNodesTemp.Next = _playerNodes;
+            for (int i = 0; i < Random.Range(0, players.Length); i++)
+            {
+                _playerNodes = _playerNodes.Next;
+            }
 
             NewPlayedCardSlotPack();
             CurrentGameState = GameState.DealingCards;
             InitCardDeck();
-             AudioService.Instance.RpcPlayOneShotDelayed(AudioSfxType.ShuffleCards, 0);
-             yield return new WaitForSeconds(1f);
-             DealCardsToPlayersFromDeck();
+            AudioService.Instance.RpcPlayOneShotDelayed(AudioSfxType.ShuffleCards, 0);
+            yield return new WaitForSeconds(1f);
+            yield return StartCoroutine(DealCardsToPlayersFromDeck());
+            OnCardsDealed();
         }
 
-        private void DealCardsToPlayersFromDeck()
+        private IEnumerator DealCardsToPlayersFromDeck()
         {
-            StartCoroutine(DealCardsToPlayersRoutine(_hoyPlayers, GetCardsPackToDeal()));
+            yield return StartCoroutine(DealCardsToPlayersRoutine(_hoyPlayers, GetCardsPackToDeal()));
 
             IEnumerator DealCardsToPlayersRoutine(HoyPlayer[] players, List<List<Card>> listCards)
             {
@@ -82,16 +88,19 @@ namespace Hoy
                 {
                     yield return StartCoroutine(DealCardsToOnePlayerRoutine((p, c) => p.TakeCard(c), players[i], listCards[i]));
                 }
-                
+
                 CurrentGameState = GameState.PlayerTurn;
                 WhosNextMove = _playerNodes.Value;
             }
         }
 
-        protected abstract List<List<Card>> GetCardsPackToDeal(); 
+        protected abstract List<List<Card>> GetCardsPackToDeal();
+
+        protected virtual void OnCardsDealed()
+        { }
 
         [Server]
-        private void NewPlayedCardSlotPack()
+        protected void NewPlayedCardSlotPack()
         {
             _playedOutCardSlotPack = new PlayedOutCardSlotPack(0, 4.5f);
         }
@@ -133,7 +142,7 @@ namespace Hoy
             }
         }
 
-        private IEnumerator DealCardsToOnePlayerRoutine(Action<HoyPlayer, Card> dealAction, HoyPlayer player, IEnumerable<Card> cards)
+        protected IEnumerator DealCardsToOnePlayerRoutine(Action<HoyPlayer, Card> dealAction, HoyPlayer player, IEnumerable<Card> cards)
         {
             foreach (Card card in cards)
             {
@@ -143,10 +152,10 @@ namespace Hoy
         }
 
         [Server]
-        public void DragEnded(Card card)
+        public virtual void DragEnded(Card card)
         {
             HoyPlayer player = card.connectionToClient.owned.First(_ => _.GetComponent<HoyPlayer>() != null).GetComponent<HoyPlayer>();
-            var dealZoneRadius = DealZone.transform.localScale.x/2;
+            var dealZoneRadius = DealZone.transform.localScale.x / 2;
             var cardToDealZone = DealZone.transform.position - card.transform.position;
             if (cardToDealZone.sqrMagnitude > dealZoneRadius * dealZoneRadius)
             {
@@ -208,7 +217,7 @@ namespace Hoy
             }
         }
 
-        private IEnumerator GameOver()
+        protected IEnumerator GameOver()
         {
             CurrentGameState = GameState.GameOver;
             foreach (var player in _hoyPlayers)
@@ -229,19 +238,20 @@ namespace Hoy
                 {
                     NetworkServer.Destroy(card.gameObject);
                 }
+
                 hoyPlayer.RpcShowWinner(winnerOfRound);
             }
 
             yield return new WaitForSeconds(3f);
-            
+
             foreach (var hoyPlayer in _hoyPlayers)
             {
                 hoyPlayer.RpcShowSeriesStat();
             }
-            
-            
+
+
             yield return new WaitForSeconds(3f);
-            
+
             if (networkManager.LeaderPlayer.CurrentRound < networkManager.LeaderPlayer.NumOfRounds)
             {
                 networkManager.NextRound();
@@ -254,8 +264,9 @@ namespace Hoy
             }
 
             yield return new WaitForSeconds(5f);
+            //ToDO ui counter to next round
             networkManager.NextRound();
-           
+
             IEnumerator CountPointsRoutine()
             {
                 foreach (var player in _hoyPlayers)
@@ -281,7 +292,7 @@ namespace Hoy
         }
 
         [Server]
-        private void PlayCard(Card card, HoyPlayer player)
+        protected void PlayCard(Card card, HoyPlayer player)
         {
             card.netIdentity.RemoveClientAuthority();
             card.RpcShowCardToAllClients();

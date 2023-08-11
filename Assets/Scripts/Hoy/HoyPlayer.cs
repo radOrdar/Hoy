@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using DG.Tweening;
 using Hoy.Cards;
 using Hoy.Helpers;
 using Mirror;
@@ -21,7 +22,6 @@ namespace Hoy
         [field: SyncVar]
         public string PlayerName { get; set; }
         [field: SyncVar] public int Score { get; set; }
-
         private PlayerCardSlotPack _playerCardSlotPack;
 
         /// <summary>
@@ -73,7 +73,14 @@ namespace Hoy
         }
 
         public List<Card> GetBank() =>
-            _playerCardSlotPack.GetBank();
+            _playerCardSlotPack.Bank;
+
+        public List<Card> GiveAwayCards()
+        {
+            var cards = _playerCardSlotPack.Cards;
+            _playerCardSlotPack.Clear();
+            return cards;
+        }
 
         [ClientRpc]
         public void RpcSetScore(int score, string playerName)
@@ -116,6 +123,11 @@ namespace Hoy
         {
             FindObjectOfType<CameraParent>().transform.rotation =
                 Quaternion.LookRotation(-transform.position, -Vector3.forward);
+        }
+
+        public void TakeChip(Chip newChip)
+        {
+            newChip.transform.DOMove(transform.position + transform.TransformDirection(new Vector2(5f, 5f)), .5f);
         }
     }
 }
