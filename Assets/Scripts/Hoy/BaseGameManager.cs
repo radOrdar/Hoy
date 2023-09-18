@@ -17,11 +17,12 @@ namespace Hoy
         public static BaseGameManager Instance { get; private set; }
 
         [field: SerializeField] public Transform DealZone { get; private set; }
+        /// <summary>DON'T MODIFY!</summary>
+        [SerializeField] public CardStaticData[] cardStaticDatas;
         [SerializeField] private Transform cardDeckSpawnTrans;
-        [SerializeField] private CardStaticData[] cardStaticDatas;
         [SerializeField] private Card cardPf;
 
-        protected HoyPlayer[] _hoyPlayers;
+        protected List<HoyPlayer> _hoyPlayers;
         protected ListNode<HoyPlayer> _playerNodes;
 
         protected List<Card> _cardsSpawned = new();
@@ -49,7 +50,7 @@ namespace Hoy
         [Server]
         public IEnumerator StartGame(HoyPlayer[] players)
         {
-            _hoyPlayers = players;
+            _hoyPlayers = players.ToList();
             foreach (var player in _hoyPlayers)
             {
                 player.TargetGameStarted();
@@ -82,9 +83,9 @@ namespace Hoy
         {
             yield return StartCoroutine(DealCardsToPlayersRoutine(_hoyPlayers, GetCardsPackToDeal()));
 
-            IEnumerator DealCardsToPlayersRoutine(HoyPlayer[] players, List<List<Card>> listCards)
+            IEnumerator DealCardsToPlayersRoutine(List<HoyPlayer> players, List<List<Card>> listCards)
             {
-                for (int i = 0; i < players.Length; i++)
+                for (int i = 0; i < players.Count; i++)
                 {
                     yield return StartCoroutine(DealCardsToOnePlayerRoutine((p, c) => p.TakeCard(c), players[i], listCards[i]));
                 }
@@ -234,11 +235,6 @@ namespace Hoy
             roomPlayerOfWinner.Wins++;
             foreach (var hoyPlayer in _hoyPlayers)
             {
-                foreach (var card in hoyPlayer.GetBank())
-                {
-                    NetworkServer.Destroy(card.gameObject);
-                }
-
                 hoyPlayer.RpcShowWinner(winnerOfRound);
             }
 
@@ -248,7 +244,6 @@ namespace Hoy
             {
                 hoyPlayer.RpcShowSeriesStat();
             }
-
 
             yield return new WaitForSeconds(3f);
 
@@ -271,7 +266,6 @@ namespace Hoy
             {
                 foreach (var player in _hoyPlayers)
                 {
-                    var target = player.transform.TransformPoint(Vector3.up * 6.5f);
                     int score = 0;
                     int orderInLayer = 0;
                     var cards = player.GetBank();
@@ -280,12 +274,16 @@ namespace Hoy
                     {
                         score += card.FaceType == CardFaceType.FInfinity ? 0 : card.Value;
                         var score1 = score;
-                        card.SetTargetServer(target, () => player.RpcSetScore(score1, player.PlayerName));
+                        card.SetTargetServer(Vector3.zero, () => player.RpcSetScore(score1));
                         AudioService.Instance.RpcPlayOneShotDelayed(AudioSfxType.PlayTable, card.cardDealMoveTime - 0.1f);
                         card.RpcSetOrderInLayer(orderInLayer++);
                         yield return new WaitForSeconds(card.cardDealMoveTime);
                     }
 
+                    foreach (var c in cards)
+                    {
+                        NetworkServer.Destroy(c.gameObject);
+                    }
                     player.Score = score;
                 }
             }

@@ -11,7 +11,6 @@ namespace Hoy.Cards
     
     public class Card : NetworkBehaviour
     {
-        [SerializeField] private CardStaticData[] _staticDatas;
         [SerializeField] private SpriteRenderer faceSpriteRenderer;
         [SerializeField] private SortingGroup _sortingGroup;
         [SerializeField] public float cardDealMoveTime = 0.5f;
@@ -77,7 +76,7 @@ namespace Hoy.Cards
         [ClientRpc]
         private void RPCInitialize(CardFaceType faceType)
         {
-            _staticData = _staticDatas.First(sd => sd.faceType == faceType);
+            _staticData = BaseGameManager.Instance.cardStaticDatas.First(sd => sd.faceType == faceType);
             _dragControl.OnStartDrag = DragStarted;
             _dragControl.OnEndDrag = CmdOnEndDrag;
         }

@@ -83,16 +83,10 @@ namespace Hoy
         }
 
         [ClientRpc]
-        public void RpcSetScore(int score, string playerName)
+        public void RpcSetScore(int score)
         {
             var ui = FindObjectOfType<UI>();
-            if (NetworkClient.localPlayer.GetComponent<HoyPlayer>().PlayerName == playerName)
-            {
-                ui.SetPlayerScore(score);
-            } else
-            {
-                ui.SetFoeScore(score);
-            }
+            ui.SetPlayerScore(score);
         }
 
         [ClientRpc]

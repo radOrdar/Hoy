@@ -102,7 +102,7 @@ namespace Hoy
 
         public override bool OnRoomServerSceneLoadedForPlayer(NetworkConnectionToClient conn, GameObject roomPlayer, GameObject gamePlayer)
         {
-            if (gameplayScenes.Values.Any(_ => Utils.IsSceneActive(_.Name)))
+            if (gameplayScenes.Values.Any(_ => Utils.IsSceneActive(_.Path)))
             {
                 StartCoroutine(SetupGamePlayerRoutine(roomPlayer, gamePlayer));
                 _numOfGameplayers++;
@@ -162,7 +162,7 @@ namespace Hoy
             if (!showRoomGUI)
                 return;
 
-            if (NetworkServer.active && gameplayScenes.Values.Any(_ => Utils.IsSceneActive(_.Name)))
+            if (NetworkServer.active && gameplayScenes.Values.Any(_ => Utils.IsSceneActive(_.Path)))
             {
                 GUILayout.BeginArea(new Rect(Screen.width - 150f, 10f, 140f, 30f));
                 if (GUILayout.Button("Return to Room"))
@@ -173,7 +173,7 @@ namespace Hoy
 
         public void StartGame()
         {
-            ServerChangeScene(gameplayScenes[numPlayers].Name);
+            ServerChangeScene(gameplayScenes[numPlayers].Path);
         }
 
         public void NextRound()

@@ -10,7 +10,6 @@ namespace Hoy
       [SerializeField] private TextMeshProUGUI topPlayerNameText;
       [SerializeField] private TextMeshProUGUI whosMoveNameText;
       [SerializeField] private TextMeshProUGUI playerScore;
-      [SerializeField] private TextMeshProUGUI foeScore;
       [SerializeField] private TextMeshProUGUI roundsText;
       [SerializeField] private TextMeshProUGUI roundWinnerNameText;
       [SerializeField] private TextMeshProUGUI roundWinnerScoreText;
@@ -31,17 +30,11 @@ namespace Hoy
       public void ActivateScores()
       {
          playerScore.gameObject.SetActive(true);
-         foeScore.gameObject.SetActive(true);
       }
 
       public void SetPlayerScore(int score)
       {
          playerScore.SetText(score.ToString());
-      }
-
-      public void SetFoeScore(int score)
-      {
-         foeScore.SetText(score.ToString());
       }
 
       public void SetRoundsInfo(int currentRound, int numberOfRounds)
@@ -66,7 +59,6 @@ namespace Hoy
       public void DeactivateScoreTexts()
       {
          playerScore.gameObject.SetActive(false);
-         foeScore.gameObject.SetActive(false);
       }
 
       public void ShowSeriesStat(HoyRoomPlayer[] hoyRoomPlayers)

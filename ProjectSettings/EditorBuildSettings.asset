@@ -17,4 +17,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/GamePlay3Players.unity
     guid: 810c594e85d61c74d9db61ba5bc3494b
+  - enabled: 1
+    path: Assets/Scenes/Online.unity
+    guid: e2e3fd41597abf740bf864310654326d
   m_configObjects: {}
