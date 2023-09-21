@@ -209,7 +209,7 @@ namespace Hoy
                     StartCoroutine(GameOver());
                 } else
                 {
-                    DealCardsToPlayersFromDeck();
+                    StartCoroutine(DealCardsToPlayersFromDeck());
                 }
             } else
             {

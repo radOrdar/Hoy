@@ -121,7 +121,7 @@ namespace Hoy
 
         public void TakeChip(Chip newChip)
         {
-            newChip.transform.DOMove(transform.position + transform.TransformDirection(new Vector2(5f, 5f)), .5f);
+            newChip.transform.DOMove(transform.position + transform.TransformDirection(new Vector2(8f, 5f)), .5f);
         }
     }
 }

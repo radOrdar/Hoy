@@ -59,7 +59,7 @@ namespace Hoy.Cards
             var fluctuation = card.transform.TransformDirection(new Vector2(Random.Range(-.04f, .04f),0));
             card.transform.up = _upDirection + fluctuation;
             card.RpcSetOrderInLayer(_bankOrderInLayer++);
-            card.SetTargetServer(_initialPoint - _horizontalOffset.normalized * 6);
+            card.SetTargetServer(_initialPoint - _horizontalOffset.normalized * 5);
             AudioService.Instance.RpcPlayOneShotDelayed(AudioSfxType.TakeBank, card.cardDealMoveTime - 0.1f);
             Bank.Add(card);
         }

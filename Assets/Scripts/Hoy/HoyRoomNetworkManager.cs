@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using Hoy.Helpers;
 using Mirror;
 using Udar.SceneManager;
@@ -43,7 +44,13 @@ namespace Hoy
         {
             if (sceneName == RoomScene)
             {
+                RecalculateRoomPlayerIndices();
                 _numOfGameplayers = 0;
+                if (LeaderPlayer == null && roomSlots.Count > 0)
+                {
+                    LeaderPlayer =(HoyRoomPlayer) roomSlots[0];
+                    LeaderPlayer.isLeader = true;
+                }
                 if (LeaderPlayer != null && LeaderPlayer.CurrentRound > 0)
                 {
                     if (LeaderPlayer.NumOfRounds > LeaderPlayer.CurrentRound)
@@ -79,7 +86,7 @@ namespace Hoy
             base.OnServerAddPlayer(conn);
             Debug.Log("server add player");
             var roomPlayer = conn.identity.GetComponent<HoyRoomPlayer>();
-            if (numPlayers == 1)
+            if (LeaderPlayer == null)
             {
                 roomPlayer.isLeader = true;
                 LeaderPlayer = roomPlayer;
@@ -125,26 +132,23 @@ namespace Hoy
 
         #endregion
 
-        /// <summary>
-        /// This is called when a server is stopped - including when a host is stopped.
-        /// </summary>
-        public override void OnStopServer()
+        public override async void OnRoomServerDisconnect(NetworkConnectionToClient conn)
         {
-#if UNITY_EDITOR
-            EditorApplication.isPlaying = false;
-#endif
-            Application.Quit();
-        }
-
-        /// <summary>
-        /// This is called when a client is stopped.
-        /// </summary>
-        public override void OnStopClient()
-        {
-#if UNITY_EDITOR
-            EditorApplication.isPlaying = false;
-#endif
-            Application.Quit();
+            await Task.Delay(500);
+            if (LeaderPlayer == null)
+            {
+                if (numPlayers > 0)
+                {
+                    LeaderPlayer = (HoyRoomPlayer)roomSlots[0];
+                    LeaderPlayer.isLeader = true;
+                }
+            }
+            if (gameplayScenes.Values.Any(_ => Utils.IsSceneActive(_.Path)))
+            {
+                await Task.Delay(500);
+                LeaderPlayer.CurrentRound = LeaderPlayer.NumOfRounds;
+                ServerChangeScene(RoomScene);
+            }
         }
 
         public override void OnRoomServerPlayersReady()
@@ -159,16 +163,16 @@ namespace Hoy
 
         public override void OnGUI()
         {
-            if (!showRoomGUI)
-                return;
-
-            if (NetworkServer.active && gameplayScenes.Values.Any(_ => Utils.IsSceneActive(_.Path)))
-            {
-                GUILayout.BeginArea(new Rect(Screen.width - 150f, 10f, 140f, 30f));
-                if (GUILayout.Button("Return to Room"))
-                    ServerChangeScene(RoomScene);
-                GUILayout.EndArea();
-            }
+            // if (!showRoomGUI)
+            //     return;
+            //
+            // if (NetworkServer.active && gameplayScenes.Values.Any(_ => Utils.IsSceneActive(_.Path)))
+            // {
+            //     GUILayout.BeginArea(new Rect(Screen.width - 150f, 10f, 140f, 30f));
+            //     if (GUILayout.Button("Return to Room"))
+            //         ServerChangeScene(RoomScene);
+            //     GUILayout.EndArea();
+            // }
         }
 
         public void StartGame()

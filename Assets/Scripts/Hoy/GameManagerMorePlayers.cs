@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Hoy.Cards;
+using Mirror;
 using UnityEngine;
 
 namespace Hoy
@@ -20,6 +21,12 @@ namespace Hoy
             {
                 cardPacks.Add(_cardsSpawned.GetRange(_cardsSpawned.Count - amountCardsToOnePlayer, amountCardsToOnePlayer));
                 _cardsSpawned.RemoveRange(_cardsSpawned.Count - amountCardsToOnePlayer, amountCardsToOnePlayer);
+            }
+
+            if (numPlayers == 5)
+            {
+                NetworkServer.Destroy(_cardsSpawned[0].gameObject);
+                _cardsSpawned.Clear();
             }
 
             return cardPacks;
