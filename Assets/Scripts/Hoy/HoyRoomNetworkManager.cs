@@ -29,7 +29,8 @@ namespace Hoy
     {
         [SerializeField] private SerializableDictionary<int, SceneField> gameplayScenes;
 
-        private List<string> namesList = new() { "Snow", "Serenity", "Nuzzle", "Climax", "Saki", "Eve", "Zlatan", "Remy" };
+        private readonly List<string> _namesList = new() { "Snow", "Serenity", "Nuzzle", "Climax", "Saki", "Eve", "Zlatan", "Remy" };
+        private HashSet<string> _occupiedNames = new();
         // Overrides the base singleton so we don't
         // have to cast to this type everywhere.
         public static HoyRoomNetworkManager Singleton => (HoyRoomNetworkManager)singleton;
@@ -92,9 +93,9 @@ namespace Hoy
                 LeaderPlayer = roomPlayer;
             }
 
-            string nameToChose = namesList[Random.Range(0, namesList.Count)];
+            string nameToChose = _namesList.Except(_occupiedNames).ToList()[Random.Range(0, _namesList.Count)];
             roomPlayer.PlayerName = nameToChose;
-            namesList.Remove(nameToChose);
+            _occupiedNames.Add(nameToChose);
         }
 
         [Server]
@@ -103,7 +104,7 @@ namespace Hoy
             yield return new WaitForSeconds(0.2f);
             var gamePlayers = FindObjectsOfType<HoyPlayer>();
             Debug.Log($"{gamePlayers.Length} gameplayers on Scene");
-            StartCoroutine(BaseGameManager.Instance.StartGame(gamePlayers));
+            StartCoroutine(BaseGameManager.Instance.StartGame(gamePlayers.OrderBy(_ => _.transform.GetSiblingIndex()).ToList()));
         }
 
 
@@ -134,12 +135,14 @@ namespace Hoy
 
         public override async void OnRoomServerDisconnect(NetworkConnectionToClient conn)
         {
+            var roomPlayer = conn.owned.First(_ => _.GetComponent<HoyRoomPlayer>()).GetComponent<HoyRoomPlayer>();
+            _occupiedNames.Remove(roomPlayer.PlayerName);
             await Task.Delay(500);
             if (LeaderPlayer == null)
             {
                 if (numPlayers > 0)
                 {
-                    LeaderPlayer = (HoyRoomPlayer)roomSlots[0];
+                    LeaderPlayer = (HoyRoomPlayer)roomSlots.First(_ => _ != null);
                     LeaderPlayer.isLeader = true;
                 }
             }

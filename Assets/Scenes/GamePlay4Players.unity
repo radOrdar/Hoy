@@ -1121,8 +1121,8 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 12835328}
-  - {fileID: 807226793}
   - {fileID: 967380564}
+  - {fileID: 807226793}
   - {fileID: 583383654}
   - {fileID: 1401608120}
   m_Father: {fileID: 0}
@@ -1161,7 +1161,7 @@ Transform:
   m_Children:
   - {fileID: 816577040}
   m_Father: {fileID: 691035562}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 45}
 --- !u!114 &807226794
 MonoBehaviour:
@@ -1439,6 +1439,7 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1ae77c3ff54f37d44ba39d7f617f996c, type: 2}
   cardDeckSpawnTrans: {fileID: 1401608120}
   cardPf: {fileID: -5285939226424223818, guid: 1700ab6618173db4e87a80b963a794ad, type: 3}
+  _hoyPlayers: []
 --- !u!114 &955294022
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1482,14 +1483,14 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 967380563}
-  m_LocalRotation: {x: 0, y: 0, z: 0.92387956, w: 0.38268343}
+  m_LocalRotation: {x: -0, y: -0, z: 0.92387956, w: 0.38268337}
   m_LocalPosition: {x: 17, y: 17, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2031419559}
   m_Father: {fileID: 691035562}
-  m_RootOrder: 2
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 135}
 --- !u!114 &967380565
 MonoBehaviour:

@@ -48,9 +48,9 @@ namespace Hoy
         }
 
         [Server]
-        public IEnumerator StartGame(HoyPlayer[] players)
+        public IEnumerator StartGame(List<HoyPlayer> players)
         {
-            _hoyPlayers = players.ToList();
+            _hoyPlayers = players;
             foreach (var player in _hoyPlayers)
             {
                 player.TargetGameStarted();
@@ -58,14 +58,14 @@ namespace Hoy
 
             _playerNodes = new ListNode<HoyPlayer>(players[0]);
             var playerNodesTemp = _playerNodes;
-            for (int i = 1; i < players.Length; i++)
+            for (int i = 1; i < players.Count; i++)
             {
                 playerNodesTemp.Next = new ListNode<HoyPlayer>(players[i]);
                 playerNodesTemp = playerNodesTemp.Next;
             }
 
             playerNodesTemp.Next = _playerNodes;
-            for (int i = 0; i < Random.Range(0, players.Length); i++)
+            for (int i = 0; i < Random.Range(0, players.Count); i++)
             {
                 _playerNodes = _playerNodes.Next;
             }
