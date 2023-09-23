@@ -77,7 +77,7 @@ namespace Hoy
 
         public List<Card> GiveAwayCards()
         {
-            var cards = _playerCardSlotPack.Cards;
+            var cards = new List<Card>(_playerCardSlotPack.Cards);
             _playerCardSlotPack.Clear();
             return cards;
         }
