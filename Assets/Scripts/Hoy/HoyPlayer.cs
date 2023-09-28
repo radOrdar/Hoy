@@ -34,7 +34,7 @@ namespace Hoy
             transform.rotation = Quaternion.LookRotation(Vector3.forward, -transform.position);
 
             int numPlayers = HoyRoomNetworkManager.Singleton.numPlayers;
-            var bankOffsetCoeff = numPlayers == 2 ? -4.5f - 0.5f : -18f / numPlayers - 0.5f;
+            var bankOffsetCoeff = (numPlayers == 2 ? -4.5f : -18f / numPlayers) - 1f;
             _playerCardSlotPack = new PlayerCardSlotPack(transform.up, transform.TransformPoint(Vector3.zero),
                 transform.right * _horizontalOffset, 10, connectionToClient, bankOffsetCoeff);
         }

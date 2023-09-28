@@ -68,7 +68,7 @@ namespace Hoy
          string stat = "";
          foreach (var roomPlayer in hoyRoomPlayers)
          {
-            stat += $"{roomPlayer.PlayerName}:{roomPlayer.Wins} wins ";
+            stat += $"{roomPlayer.PlayerName}:{roomPlayer.Wins} ";
          }
 
          seriesStatText.gameObject.SetActive(true);

@@ -1742,7 +1742,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 1ae77c3ff54f37d44ba39d7f617f996c, type: 2}
   cardDeckSpawnTrans: {fileID: 1401608120}
   cardPf: {fileID: -5285939226424223818, guid: 1700ab6618173db4e87a80b963a794ad, type: 3}
-  _hoyPlayers: []
 --- !u!114 &955294022
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3445,7 +3444,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u0418\u0433\u0440\u0430 \u043E\u043A\u043E\u043D\u0447\u0435\u043D\u0430"
+  m_text: GAME OVER
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}

@@ -44,8 +44,14 @@ namespace Hoy.Cards
         [Server]
         public void SetTargetServer(Vector3 newTarget, Action onComplete = null)
         {
+           SetTargetServer(newTarget, cardDealMoveTime, onComplete);
+        }
+        
+        [Server]
+        public void SetTargetServer(Vector3 newTarget, float duration, Action onComplete = null)
+        {
             var sequence = DOTween.Sequence();
-            sequence.Append(transform.DOMove(newTarget, cardDealMoveTime));
+            sequence.Append(transform.DOMove(newTarget, duration));
             if (onComplete != null)
             {
                 sequence.AppendCallback(() => onComplete());

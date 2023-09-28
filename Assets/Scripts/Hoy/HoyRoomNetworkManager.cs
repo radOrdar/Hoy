@@ -102,9 +102,9 @@ namespace Hoy
         private IEnumerator StartGameRoutine()
         {
             yield return new WaitForSeconds(0.2f);
-            var gamePlayers = FindObjectsOfType<HoyPlayer>();
-            Debug.Log($"{gamePlayers.Length} gameplayers on Scene");
-            StartCoroutine(BaseGameManager.Instance.StartGame(gamePlayers.OrderBy(_ => _.transform.GetSiblingIndex()).ToList()));
+            var gamePlayers = FindObjectsOfType<HoyPlayer>().OrderBy(_ => _.transform.GetSiblingIndex()).ToList();
+            gamePlayers.Reverse();
+            StartCoroutine(BaseGameManager.Instance.StartGame(gamePlayers));
         }
 
 
@@ -127,7 +127,6 @@ namespace Hoy
             yield return new WaitForSeconds(.2f);
             HoyPlayer hoyPlayer = gamePlayer.GetComponent<HoyPlayer>();
             hoyPlayer.PlayerName = roomPlayer.GetComponent<HoyRoomPlayer>().PlayerName;
-            Debug.Log($"SETUP GAME PLAYER {hoyPlayer.PlayerName}");
             startPositions[prevPosIndex].GetComponent<StartPos>().RpcSetText(hoyPlayer.PlayerName);
         }
 
