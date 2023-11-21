@@ -6,23 +6,23 @@ namespace Hoy
 {
    public class UI : MonoBehaviour
    {
-      [SerializeField] private TextMeshProUGUI bottomPlayerNameText;
-      [SerializeField] private TextMeshProUGUI topPlayerNameText;
       [SerializeField] private TextMeshProUGUI whosMoveNameText;
       [SerializeField] private TextMeshProUGUI playerScore;
       [SerializeField] private TextMeshProUGUI roundsText;
       [SerializeField] private TextMeshProUGUI roundWinnerNameText;
       [SerializeField] private TextMeshProUGUI roundWinnerScoreText;
       [SerializeField] private TextMeshProUGUI seriesStatText;
+      [SerializeField] private TextMeshProUGUI seriesStatLabel;
       [SerializeField] private TextMeshProUGUI gameOverText;
 
       private void Awake()
       {
          whosMoveNameText.SetText("");
+         whosMoveNameText.gameObject.SetActive(true);
       }
 
       public void SetMoveNextName(string name) =>
-         whosMoveNameText.SetText(name != null ? $"{name} next move" : "");
+         whosMoveNameText.SetText(name != null ? $"Ходит {name}" : "");
 
       public void DeactivateWhosMoveNameText() => 
          whosMoveNameText.gameObject.SetActive(false);
@@ -32,29 +32,29 @@ namespace Hoy
          playerScore.gameObject.SetActive(true);
       }
 
-      public void SetPlayerScore(int score)
+      public void SetPlayerScore(string score)
       {
-         playerScore.SetText(score.ToString());
+         playerScore.SetText(score);
       }
 
       public void SetRoundsInfo(int currentRound, int numberOfRounds)
       {
-         roundsText.SetText($"Round {currentRound}/{numberOfRounds}");
+         roundsText.SetText($"Раунд {currentRound}/{numberOfRounds}");
       }
 
       public void ShowWinner(string playerName, int score)
       {
          roundWinnerNameText.gameObject.SetActive(true);
          roundWinnerScoreText.gameObject.SetActive(true);
-         roundWinnerNameText.SetText($"Round Winner {playerName}");
-         roundWinnerScoreText.SetText($"His score {score.ToString()}");
+         roundWinnerNameText.SetText($"Победа в раунде за {playerName}");
+         roundWinnerScoreText.SetText($"Со счетом {score.ToString()}");
       }
 
-      public void DeactivatePlayerNames()
-      {
-         topPlayerNameText.gameObject.SetActive(false);
-         bottomPlayerNameText.gameObject.SetActive(false);
-      }
+      // public void DeactivatePlayerNames()
+      // {
+      //    topPlayerNameText.gameObject.SetActive(false);
+      //    bottomPlayerNameText.gameObject.SetActive(false);
+      // }
 
       public void DeactivateScoreTexts()
       {
@@ -71,6 +71,7 @@ namespace Hoy
             stat += $"{roomPlayer.PlayerName}:{roomPlayer.Wins} ";
          }
 
+         seriesStatLabel.gameObject.SetActive(true);
          seriesStatText.gameObject.SetActive(true);
          seriesStatText.SetText(stat);
       }

@@ -24,6 +24,9 @@ namespace Hoy
         [field: SyncVar] public int Score { get; set; }
         private PlayerCardSlotPack _playerCardSlotPack;
 
+        private Dictionary<string, int> _nameToPoints = new();
+        private UI _ui;
+
         /// <summary>
         /// This is invoked for NetworkBehaviour objects when they become active on the server.
         /// <para>This could be triggered by NetworkServer.Listen() for objects in the scene, or by NetworkServer.Spawn() for objects that are dynamically created.</para>
@@ -39,12 +42,16 @@ namespace Hoy
                 transform.right * _horizontalOffset, 10, connectionToClient, bankOffsetCoeff);
         }
 
+        public override void OnStartClient()
+        {
+            _ui = FindObjectOfType<UI>();
+        }
+
         [ClientRpc]
         public void RPCSetGameOverUI()
         {
-            var ui = FindObjectOfType<UI>();
-            ui.DeactivateWhosMoveNameText();
-            ui.ActivateScores();
+            _ui.DeactivateWhosMoveNameText();
+            _ui.ActivateScores();
         }
 
         [Server]
@@ -81,34 +88,39 @@ namespace Hoy
             return cards;
         }
 
-        [ClientRpc]
-        public void RpcSetScore(int score)
+        [TargetRpc]
+        public void TargetSetScore(string playerName, int score)
         {
-            var ui = FindObjectOfType<UI>();
-            ui.SetPlayerScore(score);
+            if (_nameToPoints.ContainsKey(playerName))
+                _nameToPoints[playerName] += score;
+            else
+                _nameToPoints[playerName] = score;
+
+            string result = "";
+            foreach (var ntp in _nameToPoints)
+            {
+                result += $"{ntp.Key}:{ntp.Value} ";
+            }
+            _ui.SetPlayerScore(result);
         }
 
         [ClientRpc]
         public void RpcShowWinner(HoyPlayer winnerOfRound)
         {
-            var ui = FindObjectOfType<UI>();
-            ui.DeactivatePlayerNames();
-            ui.DeactivateScoreTexts();
-            ui.ShowWinner(winnerOfRound.PlayerName, winnerOfRound.Score);
+            _ui.DeactivateScoreTexts();
+            _ui.ShowWinner(winnerOfRound.PlayerName, winnerOfRound.Score);
         }
 
         [ClientRpc]
         public void RpcShowSeriesStat()
         {
-            var ui = FindObjectOfType<UI>();
-            ui.ShowSeriesStat(HoyRoomNetworkManager.Singleton.roomSlots.Cast<HoyRoomPlayer>().ToArray());
+            _ui.ShowSeriesStat(HoyRoomNetworkManager.Singleton.roomSlots.Cast<HoyRoomPlayer>().ToArray());
         }
 
         [ClientRpc]
         public void RpcGameOver()
         {
-            var ui = FindObjectOfType<UI>();
-            ui.ShowGameOver();
+            _ui.ShowGameOver();
         }
 
         [TargetRpc]

@@ -46,24 +46,24 @@ namespace Hoy
             GUILayout.Label(PlayerName);
 
             if (readyToBegin)
-                GUILayout.Label("Ready");
+                GUILayout.Label("ГОТОВ");
             else
-                GUILayout.Label("Not Ready");
+                GUILayout.Label("НЕ ГОТОВ");
 
             if (isLocalPlayer)
             {
                 if (readyToBegin)
                 {
-                    if (GUILayout.Button("Cancel"))
+                    if (GUILayout.Button("НЕ ГОТОВ"))
                         CmdChangeReadyState(false);
                 } else
                 {
-                    if (GUILayout.Button("Ready"))
+                    if (GUILayout.Button("ГОТОВ"))
                         CmdChangeReadyState(true);
                 }
             }
 
-            if (!isLeader && leaderPlayer != null && leaderPlayer.isOwned && GUILayout.Button("REMOVE"))
+            if (!isLeader && leaderPlayer != null && leaderPlayer.isOwned && GUILayout.Button("КИК"))
             {
                 // This button only shows on the Host for all players other than the Host
                 // Host and Players can't remove themselves (stop the client instead)
@@ -78,14 +78,14 @@ namespace Hoy
 
             if (isLeader && leaderPlayer && leaderPlayer.isOwned)
             {
-                GUILayout.Label("Enter Number of Rounds");
+                GUILayout.Label("ВВЕДИ КОЛИЧЕСТВО РАУНДОВ");
                 string numberOfRoundsText = "";
                 numberOfRoundsText = GUILayout.TextField(numberOfRoundsText);
                 Int32.TryParse(numberOfRoundsText, out int numOfR);
                 if (numOfR != 0)
                     CmdSetNumberOfRounds(numOfR);
 
-                if (allPlayersReady && GUILayout.Button("START GAME"))
+                if (allPlayersReady && GUILayout.Button("НАЧАТЬ ИГРУ"))
                 {
                     CmdStartGame();
                 }
@@ -96,7 +96,7 @@ namespace Hoy
             if (isLeader)
             {
                 GUILayout.BeginArea(new Rect(20f, 350f, 140f, 330f));
-                GUILayout.Label("Number of rounds");
+                GUILayout.Label("КОЛИЧЕСТВО РАУНДОВ");
                 GUILayout.Label(NumOfRounds.ToString());
                 GUILayout.EndArea();
             }

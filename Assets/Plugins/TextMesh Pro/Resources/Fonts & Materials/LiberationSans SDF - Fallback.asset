@@ -177,7 +177,7 @@ MonoBehaviour:
     m_StyleName: Regular
     m_PointSize: 86
     m_Scale: 1
-    m_UnitsPerEM: 0
+    m_UnitsPerEM: 2048
     m_LineHeight: 98.8916
     m_AscentLine: 77.853516
     m_CapLine: 59
@@ -249,9 +249,9 @@ MonoBehaviour:
     packingMode: 4
     atlasWidth: 512
     atlasHeight: 512
-    characterSetSelectionMode: 1
-    characterSequence: 32 - 126, 160 - 255, 8192 - 8303, 8364, 8482, 9633
-    referencedFontAssetGUID: 8f586378b4e144a9851e7b34d9b748ee
+    characterSetSelectionMode: 6
+    characterSequence: 20-22,28-29,2C-2E,30-31,33,36,39,410-414,417-418,41A,41D-420,422-423,42C,430-443,445,447-449,44B-44C,44E-44F,201C-201D
+    referencedFontAssetGUID: 2e498d1c8094910479dc3e1b768306a4
     referencedTextAssetGUID: 
     fontStyle: 0
     fontStyleModifier: 0
@@ -311,7 +311,7 @@ Texture2D:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: LiberationSans SDF Atlas
+  m_Name: LiberationSans SDF - Fallback Atlas
   m_ImageContentsHash:
     serializedVersion: 2
     Hash: 00000000000000000000000000000000

@@ -272,11 +272,16 @@ namespace Hoy
                     cards.Reverse();
                     foreach (var card in cards)
                     {
-                        score += card.FaceType == CardFaceType.FInfinity ? 0 : card.Value;
-                        var score1 = score;
-                        card.SetTargetServer(Vector3.zero, () => player.RpcSetScore(score1));
+                        int cardValue = card.FaceType == CardFaceType.FInfinity ? 0 : card.Value;
+                        int cardValueCopy = cardValue; 
+                        card.RpcRevealFace();
+                        card.SetTargetServer(Vector3.zero, () =>
+                        {
+                            foreach (var p in _hoyPlayers) p.TargetSetScore(player.PlayerName, cardValueCopy);
+                        });
                         AudioService.Instance.RpcPlayOneShotDelayed(AudioSfxType.PlayTable, card.cardDealMoveTime - 0.1f);
                         card.RpcSetOrderInLayer(orderInLayer++);
+                        score += cardValue;
                         yield return new WaitForSeconds(card.cardDealMoveTime);
                     }
 
@@ -293,7 +298,7 @@ namespace Hoy
         protected void PlayCard(Card card, HoyPlayer player)
         {
             card.netIdentity.RemoveClientAuthority();
-            card.RpcShowCardToAllClients();
+            card.RpcRevealFace();
             _playedOutCardSlotPack.AddCard(card, player);
         }
 

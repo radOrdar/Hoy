@@ -29,7 +29,11 @@ namespace Hoy
     {
         [SerializeField] private SerializableDictionary<int, SceneField> gameplayScenes;
 
-        private readonly List<string> _namesList = new() { "Snow", "Serenity", "Nuzzle", "Climax", "Saki", "Eve", "Zlatan", "Remy" };
+        private readonly List<string> _namesList = new()
+        {
+            "Огонь", "Скорпион", "Дракон", "Вампир", "Герой", "Тигра", "Шутник", "Звезда", "Соник",
+            "Ниндзя", "Раптор", "Блейз", "Снайпер", "Турбо", "Вода", "Винни-Пух", "Мастер", "Учитель", "Сосед"
+        };
         private HashSet<string> _occupiedNames = new();
         // Overrides the base singleton so we don't
         // have to cast to this type everywhere.
@@ -85,7 +89,6 @@ namespace Hoy
             }
 
             base.OnServerAddPlayer(conn);
-            Debug.Log("server add player");
             var roomPlayer = conn.identity.GetComponent<HoyRoomPlayer>();
             if (LeaderPlayer == null)
             {
@@ -93,7 +96,8 @@ namespace Hoy
                 LeaderPlayer = roomPlayer;
             }
 
-            string nameToChose = _namesList.Except(_occupiedNames).ToList()[Random.Range(0, _namesList.Count)];
+            var remainedNames = _namesList.Except(_occupiedNames).ToList();
+            string nameToChose = remainedNames[Random.Range(0, remainedNames.Count)];
             roomPlayer.PlayerName = nameToChose;
             _occupiedNames.Add(nameToChose);
         }
@@ -165,16 +169,7 @@ namespace Hoy
 
         public override void OnGUI()
         {
-            // if (!showRoomGUI)
-            //     return;
-            //
-            // if (NetworkServer.active && gameplayScenes.Values.Any(_ => Utils.IsSceneActive(_.Path)))
-            // {
-            //     GUILayout.BeginArea(new Rect(Screen.width - 150f, 10f, 140f, 30f));
-            //     if (GUILayout.Button("Return to Room"))
-            //         ServerChangeScene(RoomScene);
-            //     GUILayout.EndArea();
-            // }
+            
         }
 
         public void StartGame()

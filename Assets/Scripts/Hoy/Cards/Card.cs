@@ -95,12 +95,17 @@ namespace Hoy.Cards
         }
 
         [ClientRpc]
-        public void RpcShowCardToAllClients()
+        public void RpcRevealFace()
         {
             faceSpriteRenderer.sprite = _staticData.faceSprite;
         }
 
-        [Client]
+        [ClientRpc]
+        public void RpcHideFace()
+        {
+            faceSpriteRenderer.sprite = _staticData.shirtSprite;
+        }
+        
         public void DragStarted()
         {
             NetworkClient.localPlayer.GetComponent<HoyPlayer>().CmdOnStartDrag(this);

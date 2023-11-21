@@ -81,7 +81,7 @@ namespace Hoy
                     var lastPlayerHandCards = lastPlayer.GiveAwayCards();
                     foreach (var card in lastPlayerHandCards)
                     {
-                        card.RpcShowCardToAllClients();
+                        card.RpcRevealFace();
                     }
 
                     yield return StartCoroutine(DealCardsToOnePlayerRoutine((p, c) => p.AddToBank(c), lastPlayer, lastPlayerHandCards));
